@@ -1,0 +1,8 @@
+{
+  "name": "Current Age",
+  "description": "Shows current age in real time",
+  "uuid": "current-age@yatx.one",
+  "shell-version": [
+    "40"
+  ]
+}
