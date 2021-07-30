@@ -18,6 +18,11 @@
 
 /* exported init */
 
+
+//Gsettings
+const GS_SCHEMA = "org.gnome.shell.extensions.current-age";
+const GS_DATE_OF_BIRTH = "date-of-birth";
+const ExtensionUtils = imports.misc.extensionUtils;
 const GETTEXT_DOMAIN = 'current-age-extension';
 
 const {GObject, St, Clutter} = imports.gi;
@@ -31,8 +36,12 @@ const Indicator = GObject.registerClass(
         _init() {
             super._init(0.0, _('Current Age Indicator'));
 
+            //Register settings
+            this.gsettings = ExtensionUtils.getSettings(GS_SCHEMA);
+            this.date_of_birth = this.gsettings.get_string(GS_DATE_OF_BIRTH);
+
             this.add_child(new St.Label({
-                text: 'Hello World',
+                text:  this.date_of_birth,
                 y_align: Clutter.ActorAlign.CENTER
             }));
         }
