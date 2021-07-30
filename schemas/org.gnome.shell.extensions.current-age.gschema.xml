@@ -1,7 +1,7 @@
 <schemalist gettext-domain="current-age">
     <schema id="org.gnome.shell.extensions.current-age" path="/org/gnome/shell/extensions/current-age/">
         <key type="s" name="date-of-birth">
-            <default>"Test"</default>
+            <default>"2"</default>
             <summary>Date of birth</summary>
             <description/>
         </key>
