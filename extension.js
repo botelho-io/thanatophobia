@@ -20,7 +20,7 @@
 
 const GETTEXT_DOMAIN = 'my-indicator-extension';
 
-const { GObject, St } = imports.gi;
+const {GObject, St, Clutter} = imports.gi;
 
 const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
 const _ = Gettext.gettext;
@@ -31,22 +31,22 @@ const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 
 const Indicator = GObject.registerClass(
-class Indicator extends PanelMenu.Button {
-    _init() {
-        super._init(0.0, _('My Shiny Indicator'));
+    class Indicator extends PanelMenu.Button {
+        _init() {
+            super._init(0.0, _('My Shiny Indicator'));
 
-        this.add_child(new St.Icon({
-            icon_name: 'face-smile-symbolic',
-            style_class: 'system-status-icon',
-        }));
+            this.add_child(new St.Label({
+                text: 'Hello World',
+                y_align: Clutter.ActorAlign.CENTER
+            }));
 
-        let item = new PopupMenu.PopupMenuItem(_('Show Notification'));
-        item.connect('activate', () => {
-            Main.notify(_('Whatʼs up, folks?'));
-        });
-        this.menu.addMenuItem(item);
-    }
-});
+            let item = new PopupMenu.PopupMenuItem(_('Show Notification'));
+            item.connect('activate', () => {
+                Main.notify(_('Whatʼs up, folks?'));
+            });
+            this.menu.addMenuItem(item);
+        }
+    });
 
 class Extension {
     constructor(uuid) {
