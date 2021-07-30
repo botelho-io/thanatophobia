@@ -30,6 +30,7 @@ const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
 const _ = Gettext.gettext;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
+
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
         _init() {
@@ -39,7 +40,7 @@ const Indicator = GObject.registerClass(
             this.date_of_birth = this.gsettings.get_string(GS_DATE_OF_BIRTH);
 
             this.add_child(new St.Label({
-                text: this.date_of_birth,
+                text: ((Date.now() - new Date(this.date_of_birth).getTime()) / 31536000000).toString(),
                 y_align: Clutter.ActorAlign.CENTER
             }));
         }
