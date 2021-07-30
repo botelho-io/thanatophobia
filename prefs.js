@@ -23,7 +23,6 @@ function buildPrefsWidget() {
         visible: true
     });
 
-    //Date of birth chooser
     let refreshLabel = new Gtk.Label({
         label: "Date of birth:",
         halign: Gtk.Align.START,
@@ -43,7 +42,6 @@ function buildPrefsWidget() {
     prefsWidget.attach(refreshLabel, 0, 1, 1, 1);
     prefsWidget.attach_next_to(refreshField, refreshLabel, Gtk.PositionType.RIGHT, 1, 1);
 
-    //Set window size:
     prefsWidget.connect('realize', () => {{
             let window = prefsWidget.get_root();
             window.default_width = 200;
