@@ -18,41 +18,29 @@
 
 /* exported init */
 
-const GETTEXT_DOMAIN = 'my-indicator-extension';
+const GETTEXT_DOMAIN = 'current-age-extension';
 
 const {GObject, St, Clutter} = imports.gi;
 
 const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
 const _ = Gettext.gettext;
-
-const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
         _init() {
-            super._init(0.0, _('My Shiny Indicator'));
+            super._init(0.0, _('Current Age Indicator'));
 
             this.add_child(new St.Label({
                 text: 'Hello World',
                 y_align: Clutter.ActorAlign.CENTER
             }));
-
-            let item = new PopupMenu.PopupMenuItem(_('Show Notification'));
-            item.connect('activate', () => {
-                Main.notify(_('Whatʼs up, folks?'));
-            });
-            this.menu.addMenuItem(item);
         }
     });
 
 class Extension {
     constructor(uuid) {
         this._uuid = uuid;
-
-        ExtensionUtils.initTranslations(GETTEXT_DOMAIN);
     }
 
     enable() {
