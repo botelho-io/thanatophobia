@@ -30,19 +30,20 @@ function buildPrefsWidget() {
     });
 
     let refreshField = new Gtk.Entry({
-        text: this.settings.get_string(GS_KEY_TIMEOUT).toString(),
+        text: this.settings.get_string(GS_KEY_TIMEOUT),
         halign: Gtk.Align.START,
         visible: true
     });
 
-    refreshField.connect('changed', function(inputField) {
+    refreshField.connect('changed', function (inputField) {
         settings.set_string(GS_KEY_TIMEOUT, inputField.get_text());
     });
 
     prefsWidget.attach(refreshLabel, 0, 1, 1, 1);
     prefsWidget.attach_next_to(refreshField, refreshLabel, Gtk.PositionType.RIGHT, 1, 1);
 
-    prefsWidget.connect('realize', () => {{
+    prefsWidget.connect('realize', () => {
+        {
             let window = prefsWidget.get_root();
             window.default_width = 200;
             window.default_height = 200;

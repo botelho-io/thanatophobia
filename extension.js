@@ -39,7 +39,7 @@ const Indicator = GObject.registerClass(
             this.date_of_birth = this.gsettings.get_string(GS_DATE_OF_BIRTH);
 
             this.add_child(new St.Label({
-                text:  this.date_of_birth,
+                text: this.date_of_birth,
                 y_align: Clutter.ActorAlign.CENTER
             }));
         }
