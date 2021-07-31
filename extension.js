@@ -30,6 +30,7 @@ const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
 const _ = Gettext.gettext;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
+const Mainloop = imports.mainloop;
 
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
