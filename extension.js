@@ -28,7 +28,6 @@ const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
 const ExtensionUtils = imports.misc.extensionUtils;
 const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
 const Main = imports.ui.main;
-const Mainloop = imports.mainloop;
 const PanelMenu = imports.ui.panelMenu;
 const _ = Gettext.gettext;
 const {GObject, St, Clutter} = imports.gi;
@@ -71,12 +70,6 @@ const Indicator = GObject.registerClass(
 
         _refresh() {
             this._updateAge();
-
-            if (this._timeout) {
-                Mainloop.source_remove(this._timeout);
-                this._timeout = null;
-            }
-
             sourceId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, () => this._refresh());
         }
     });
