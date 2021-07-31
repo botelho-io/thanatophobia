@@ -19,18 +19,18 @@
 /* exported init */
 'use strict';
 
-const GS_SCHEMA = "org.gnome.shell.extensions.current-age";
-const GS_DATE_OF_BIRTH = "date-of-birth";
-const ExtensionUtils = imports.misc.extensionUtils;
 const GETTEXT_DOMAIN = 'current-age-extension';
+const GS_DATE_OF_BIRTH = "date-of-birth";
+const GS_SCHEMA = "org.gnome.shell.extensions.current-age";
 
+const ExtensionUtils = imports.misc.extensionUtils;
+const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
+const Main = imports.ui.main;
+const Mainloop = imports.mainloop;
+const PanelMenu = imports.ui.panelMenu;
+const _ = Gettext.gettext;
 const {GObject, St, Clutter} = imports.gi;
 
-const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
-const _ = Gettext.gettext;
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
-const Mainloop = imports.mainloop;
 
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
@@ -40,10 +40,27 @@ const Indicator = GObject.registerClass(
             this.gsettings = ExtensionUtils.getSettings(GS_SCHEMA);
             this.date_of_birth = this.gsettings.get_string(GS_DATE_OF_BIRTH);
 
-            this.add_child(new St.Label({
-                text: ((Date.now() - new Date(this.date_of_birth).getTime()) / 31536000000).toString(),
+            this.label = new St.Label({
                 y_align: Clutter.ActorAlign.CENTER
-            }));
+            })
+            this.add_child(this.label);
+
+            this._refresh();
+        }
+
+        _updateAge() {
+            this.label.set_text(((Date.now() - new Date(this.date_of_birth).getTime()) / 31536000000).toFixed(9).toString());
+        }
+
+        _refresh() {
+            this._updateAge();
+
+            if (this._timeout) {
+                Mainloop.source_remove(this._timeout);
+                this._timeout = null;
+            }
+
+            this._timeout = Mainloop.timeout_add(50, () => this._refresh());
         }
     });
 
