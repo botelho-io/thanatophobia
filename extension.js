@@ -5,12 +5,14 @@ const GS_KEY_DAY = "day";
 const GS_KEY_MONTH = "month";
 const GS_KEY_YEAR = "year";
 const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
+const LIFE_EXPECTANCY = 72.6
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const GLib = imports.gi.GLib;
 const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
+const PopupMenu = imports.ui.popupMenu;
 const _ = Gettext.gettext;
 const {GObject, St, Clutter} = imports.gi;
 
@@ -35,6 +37,10 @@ const Indicator = GObject.registerClass(
             })
             this.add_child(this.label);
 
+            const age = ((Date.now() - new Date(this.year, this.month - 1, this.day).getTime()) / 3.15576e+10).toFixed(9)
+            let item = new PopupMenu.PopupMenuItem(_(`${Math.floor(age / LIFE_EXPECTANCY * 100).toString()}% of global average life expectancy`));
+
+            this.menu.addMenuItem(item);
             this._refresh();
         }
 
