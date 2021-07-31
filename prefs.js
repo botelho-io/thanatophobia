@@ -33,8 +33,8 @@ function buildPrefsWidget() {
 
     let birthdateEntry = new Gtk.Calendar({
         year: this.settings.get_int(GS_KEY_YEAR),
-        month:  this.settings.get_int(GS_KEY_MONTH),
-        day:  this.settings.get_int(GS_KEY_DAY),
+        month: this.settings.get_int(GS_KEY_MONTH),
+        day: this.settings.get_int(GS_KEY_DAY),
         halign: Gtk.Align.START,
         visible: true
     });

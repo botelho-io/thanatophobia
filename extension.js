@@ -66,7 +66,7 @@ const Indicator = GObject.registerClass(
         }
 
         _updateAge() {
-            this.label.set_text(((Date.now() - new Date(this.year, this.month, this.day).getTime()) / 31536000000).toFixed(9).toString());
+            this.label.set_text(((Date.now() - new Date(this.year, this.month - 1, this.day).getTime()) / 3.15576e+10).toFixed(9).toString());
         }
 
         _refresh() {
