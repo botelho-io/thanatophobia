@@ -1,6 +1,6 @@
 {
   "name": "Current Age",
-  "description": "Shows current age in real time",
+  "description": "Displays your current age in real time \uD83D\uDE08 Great source of motivation!",
   "uuid": "current-age@yatx.one",
   "shell-version": [
     "40"

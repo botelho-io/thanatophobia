@@ -38,6 +38,7 @@ const Indicator = GObject.registerClass(
             super._init(0.0, _('Current Age Indicator'));
 
             this.gsettings = ExtensionUtils.getSettings(GS_SCHEMA);
+            this.gsettings.connect('changed::' + GS_DATE_OF_BIRTH, () => this._dateOfBirthChanged());
             this.date_of_birth = this.gsettings.get_string(GS_DATE_OF_BIRTH);
 
             this.label = new St.Label({
@@ -45,6 +46,11 @@ const Indicator = GObject.registerClass(
             })
             this.add_child(this.label);
 
+            this._refresh();
+        }
+
+        _dateOfBirthChanged() {
+            this.date_of_birth = this.gsettings.get_string(GS_DATE_OF_BIRTH);
             this._refresh();
         }
 
