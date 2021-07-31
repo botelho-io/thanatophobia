@@ -1,7 +1,7 @@
 {
-  "name": "Current Age",
-  "description": "Displays your current age in real time \uD83D\uDE08 Great source of motivation!",
-  "uuid": "current-age@yatx.one",
+  "name": "Thanatophobia",
+  "description": "Displays your age in real time! Great source of motivation according to terror management theory \uD83D\uDE0A",
+  "uuid": "thanatophobia@yatx.one",
   "shell-version": [
     "40"
   ]

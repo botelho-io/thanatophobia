@@ -19,9 +19,9 @@
 /* exported init */
 'use strict';
 
-const GETTEXT_DOMAIN = 'current-age-extension';
+const GETTEXT_DOMAIN = 'thanatophobia-extension';
 const GS_DATE_OF_BIRTH = "date-of-birth";
-const GS_SCHEMA = "org.gnome.shell.extensions.current-age";
+const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
@@ -81,6 +81,11 @@ class Extension {
     }
 
     disable() {
+        if (this._timeout) {
+            Mainloop.source_remove(this._timeout);
+            this._timeout = null;
+        }
+
         this._indicator.destroy();
         this._indicator = null;
     }

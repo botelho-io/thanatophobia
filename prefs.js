@@ -2,7 +2,7 @@
 
 const Gtk = imports.gi.Gtk;
 const ExtensionUtils = imports.misc.extensionUtils;
-const GS_SCHEMA = "org.gnome.shell.extensions.current-age";
+const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
 const GS_KEY_TIMEOUT = "date-of-birth";
 
 function init() {
