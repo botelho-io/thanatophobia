@@ -1,19 +1,19 @@
 'use strict';
 
 const GETTEXT_DOMAIN = 'thanatophobia-extension';
-const GS_KEY_YEAR = "year";
-const GS_KEY_MONTH = "month";
 const GS_KEY_DAY = "day";
+const GS_KEY_MONTH = "month";
+const GS_KEY_YEAR = "year";
 const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
 
 const ExtensionUtils = imports.misc.extensionUtils;
+const GLib = imports.gi.GLib;
 const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const _ = Gettext.gettext;
 const {GObject, St, Clutter} = imports.gi;
 
-const GLib = imports.gi.GLib;
 let sourceId = null;
 
 const Indicator = GObject.registerClass(
