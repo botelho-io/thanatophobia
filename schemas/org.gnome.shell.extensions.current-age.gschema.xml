@@ -1,6 +1,6 @@
 <schemalist gettext-domain="thanatophobia">
     <schema id="org.gnome.shell.extensions.thanatophobia" path="/org/gnome/shell/extensions/thanatophobia/">
-        <key type="s" name="date-of-birth">
+        <key type="s" name="birthdate">
             <default>"1 Jan 1970"</default>
             <summary>Date of birth</summary>
             <description/>

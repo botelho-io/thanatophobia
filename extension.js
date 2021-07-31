@@ -20,7 +20,7 @@
 'use strict';
 
 const GETTEXT_DOMAIN = 'thanatophobia-extension';
-const GS_DATE_OF_BIRTH = "date-of-birth";
+const GS_DATE_OF_BIRTH = "birthdate";
 const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
 
 const ExtensionUtils = imports.misc.extensionUtils;
