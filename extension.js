@@ -20,7 +20,9 @@
 'use strict';
 
 const GETTEXT_DOMAIN = 'thanatophobia-extension';
-const GS_DATE_OF_BIRTH = "birthdate";
+const GS_KEY_YEAR = "year";
+const GS_KEY_MONTH = "month";
+const GS_KEY_DAY = "day";
 const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -40,8 +42,13 @@ const Indicator = GObject.registerClass(
             super._init(0.0, _('Current Age Indicator'));
 
             this.gsettings = ExtensionUtils.getSettings(GS_SCHEMA);
-            this.gsettings.connect('changed::' + GS_DATE_OF_BIRTH, () => this._dateOfBirthChanged());
-            this.date_of_birth = this.gsettings.get_string(GS_DATE_OF_BIRTH);
+            this.gsettings.connect('changed::' + GS_KEY_YEAR, () => this._dateOfBirthChanged());
+            this.gsettings.connect('changed::' + GS_KEY_MONTH, () => this._dateOfBirthChanged());
+            this.gsettings.connect('changed::' + GS_KEY_DAY, () => this._dateOfBirthChanged());
+
+            this.year = this.gsettings.get_int(GS_KEY_YEAR);
+            this.month = this.gsettings.get_int(GS_KEY_MONTH);
+            this.day = this.gsettings.get_int(GS_KEY_DAY);
 
             this.label = new St.Label({
                 y_align: Clutter.ActorAlign.CENTER
@@ -52,12 +59,14 @@ const Indicator = GObject.registerClass(
         }
 
         _dateOfBirthChanged() {
-            this.date_of_birth = this.gsettings.get_string(GS_DATE_OF_BIRTH);
+            this.year = this.gsettings.get_int(GS_KEY_YEAR);
+            this.month = this.gsettings.get_int(GS_KEY_MONTH);
+            this.day = this.gsettings.get_int(GS_KEY_DAY);
             this._refresh();
         }
 
         _updateAge() {
-            this.label.set_text(((Date.now() - new Date(this.date_of_birth).getTime()) / 31536000000).toFixed(9).toString());
+            this.label.set_text(((Date.now() - new Date(this.year, this.month, this.day).getTime()) / 31536000000).toFixed(9).toString());
         }
 
         _refresh() {
