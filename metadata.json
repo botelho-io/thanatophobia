@@ -1,8 +1,10 @@
 {
   "name": "Thanatophobia",
-  "description": "Displays your age in real time! Great source of motivation according to terror management theory \uD83D\uDE0A",
+  "description": "Displays your age in real time! \n\nGreat source of motivation according to terror management theory \uD83D\uDE0A",
   "uuid": "thanatophobia@yatx.one",
+  "version": 1,
   "shell-version": [
     "40"
-  ]
+  ],
+  "url": "https://github.com/yatxone/thanatophobia"
 }
