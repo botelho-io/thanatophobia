@@ -2,6 +2,8 @@
 
 ### Great source of motivation according to terror management theory 😈
 
+![in-action](https://github.com/yatxone/thanatophobia/raw/main/gif/in-action.gif)
+
 #### Install:
 
 ##### From GNOME Extensions
@@ -15,4 +17,5 @@ mkdir -p ~/.local/share/gnome-shell/extensions && \
 git clone https://github.com/yatxone/thanatophobia.git \
 ~/.local/share/gnome-shell/extensions/thanatophobia@yatx.one
 ```
+
 You might need to logout 
