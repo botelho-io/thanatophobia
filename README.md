@@ -16,8 +16,6 @@ https://extensions.gnome.org/extension/4425/thanatophobia
 mkdir -p ~/.local/share/gnome-shell/extensions && \
 git clone https://github.com/yatxone/thanatophobia.git \
 ~/.local/share/gnome-shell/extensions/thanatophobia@yatx.one
-cd ~/.local/share/gnome-shell/extensions/thanatophobia@yatx.one
-glib-compile-schemas schemas/
 ```
 
 You might need to logout 
