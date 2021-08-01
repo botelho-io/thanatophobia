@@ -2,7 +2,7 @@
 
 ### Great source of motivation according to terror management theory 😈
 
-![in-action](https://github.com/yatxone/thanatophobia/raw/main/gif/in-action.gif)
+![in-action](https://github.com/yatxone/thanatophobia/raw/main/gif/preview.gif)
 
 #### Install:
 
