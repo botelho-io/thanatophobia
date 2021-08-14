@@ -37,7 +37,7 @@ const Indicator = GObject.registerClass(
             })
             this.add_child(this.label);
 
-            const age = ((Date.now() - new Date(this.year, this.month - 1, this.day).getTime()) / 3.15576e+10).toFixed(9)
+            const age = ((Date.now() - new Date(this.year, this.month, this.day).getTime()) / 3.15576e+10).toFixed(9)
             let item = new PopupMenu.PopupMenuItem(_(`${Math.floor(age / LIFE_EXPECTANCY * 100).toString()}% of global average life expectancy`));
 
             this.menu.addMenuItem(item);
@@ -52,7 +52,7 @@ const Indicator = GObject.registerClass(
         }
 
         _updateAge() {
-            this.label.set_text(((Date.now() - new Date(this.year, this.month - 1, this.day).getTime()) / 3.15576e+10).toFixed(9).toString());
+            this.label.set_text(((Date.now() - new Date(this.year, this.month, this.day).getTime()) / 3.15576e+10).toFixed(9).toString());
         }
 
         _refresh() {

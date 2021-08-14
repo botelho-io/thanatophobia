@@ -41,8 +41,8 @@ function buildPrefsWidget() {
 
     birthdateEntry.connect('day-selected', function (inputField) {
         settings.set_int(GS_KEY_YEAR, inputField.get_date().get_year());
-        settings.set_int(GS_KEY_MONTH, inputField.get_date().get_month());
-        settings.set_int(GS_KEY_DAY, inputField.get_date().get_day_of_month());
+        settings.set_int(GS_KEY_MONTH, inputField.get_date().get_month() - 1);
+        settings.set_int(GS_KEY_DAY, inputField.get_date().get_day_of_month() - 1);
     });
 
     prefsWidget.attach(birthdateLabel, 0, 1, 1, 1);
