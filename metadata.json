@@ -4,7 +4,8 @@
   "uuid": "thanatophobia@yatx.one",
   "version": 4,
   "shell-version": [
-    "40"
+    "40",
+    "41"
   ],
   "url": "https://github.com/yatxone/thanatophobia"
 }
