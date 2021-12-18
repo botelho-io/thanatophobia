@@ -13,6 +13,7 @@ const GS_KEY_COUNTRY = "country";
 const GS_KEY_LIFE_EXPECTANCY = "expectancy";
 const GS_KEY_LIFE_EXPECTANCY_YEAR = "expectancy-year";
 const GS_KEY_COUNTDOWN = "countdown";
+const GS_KEY_DIGITS = "rounding";
 const session = new Soup.SessionAsync();
 
 function init() {
@@ -49,9 +50,6 @@ function buildPrefsWidget() {
     let timeSeparatorLabel = new Gtk.Label({
         label: ":", halign: Gtk.Align.START, visible: true
     });
-    let modeLabel = new Gtk.Label({
-        label: "Display Mode:", halign: Gtk.Align.START, visible: true
-    });
     let countryLabel = new Gtk.Label({
         label: "Country (ISO-a3):", halign: Gtk.Align.START, visible: true
     });
@@ -65,6 +63,12 @@ function buildPrefsWidget() {
     });
     let countryLink = new Gtk.LinkButton({
         label: "ISO 3166 Code List", uri: "https://www.iso.org/obp/ui/#search/code/", halign: Gtk.Align.END,visible: true
+    });
+    let modeLabel = new Gtk.Label({
+        label: "Display Mode:", halign: Gtk.Align.START, visible: true
+    });
+    let digitLabel = new Gtk.Label({
+        label: "Number of digits:", halign: Gtk.Align.START, visible: true
     });
 
     /******************************
@@ -92,11 +96,6 @@ function buildPrefsWidget() {
     minuteEntry.set_range(0, 59);
     minuteEntry.set_value(limit(0, 59, settings.get_int(GS_KEY_MINUTE)));
     minuteEntry.set_increments(1, 2);
-    // Biological sex
-    let modeEntry = new Gtk.ComboBoxText()
-    modeEntry.append_text("Count up from birthday (age)");
-    modeEntry.append_text("Count down from life expectancy");
-    modeEntry.set_active(settings.get_int(GS_KEY_COUNTDOWN) === 1 ? 1 : 0);
     // Residency country
     let countryEntry = new Gtk.Entry({
         buffer: new Gtk.EntryBuffer()
@@ -109,6 +108,18 @@ function buildPrefsWidget() {
     sexEntry.set_active(settings.get_int(GS_KEY_SEX) === 1 ? 0 : 1);
     // Recalculate button
     let recalculateButton = new Gtk.Button({label: "Recalculate"})
+    // Mode selection
+    let modeEntry = new Gtk.ComboBoxText()
+    modeEntry.append_text("Count up from birthday (age)");
+    modeEntry.append_text("Count down from life expectancy");
+    modeEntry.set_active(settings.get_int(GS_KEY_COUNTDOWN) === 1 ? 1 : 0);
+    // Digit selection
+    let digitEntry = new Gtk.SpinButton();
+    digitEntry.set_sensitive(true);
+    digitEntry.set_numeric(true);
+    digitEntry.set_range(0, 10);
+    digitEntry.set_value(limit(0, 10, settings.get_int(GS_KEY_DIGITS)));
+    digitEntry.set_increments(1, 2);
 
     /******************************
      * Add widgets to container
@@ -131,11 +142,8 @@ function buildPrefsWidget() {
     prefsWidget.attach_next_to(hourEntry, timeLabel, Gtk.PositionType.RIGHT, 1, 1);
     prefsWidget.attach_next_to(timeSeparatorLabel, hourEntry, Gtk.PositionType.RIGHT, 1, 1);
     prefsWidget.attach_next_to(minuteEntry, timeSeparatorLabel, Gtk.PositionType.RIGHT, 1, 1);
-    // Display mode
-    prefsWidget.attach_next_to(modeLabel, timeLabel, Gtk.PositionType.BOTTOM, 1, 1);
-    prefsWidget.attach_next_to(modeEntry, modeLabel, Gtk.PositionType.RIGHT, 3, 1);
     // Biological sex
-    prefsWidget.attach_next_to(sexLabel, modeLabel, Gtk.PositionType.BOTTOM, 1, 1);
+    prefsWidget.attach_next_to(sexLabel, timeLabel, Gtk.PositionType.BOTTOM, 1, 1);
     prefsWidget.attach_next_to(sexEntry, sexLabel, Gtk.PositionType.RIGHT, 3, 1);
     // Residency country
     prefsWidget.attach_next_to(countryLabel, sexLabel, Gtk.PositionType.BOTTOM, 1, 1);
@@ -145,6 +153,12 @@ function buildPrefsWidget() {
     prefsWidget.attach(recalculateButton, 0, 7, 1, 1);
     // Country link
     prefsWidget.attach(countryLink, 1, 7, 3, 1);
+    // Display mode
+    prefsWidget.attach_next_to(modeLabel, recalculateButton, Gtk.PositionType.BOTTOM, 1, 1);
+    prefsWidget.attach_next_to(modeEntry, modeLabel, Gtk.PositionType.RIGHT, 3, 1);
+    // Digit
+    prefsWidget.attach_next_to(digitLabel, modeLabel, Gtk.PositionType.BOTTOM, 1, 1);
+    prefsWidget.attach_next_to(digitEntry, digitLabel, Gtk.PositionType.RIGHT, 3, 1);
 
     /******************************
      * Add callbacks
@@ -164,14 +178,6 @@ function buildPrefsWidget() {
     // Hours
     hourEntry.connect("changed", function (field) {
         settings.set_int(GS_KEY_HOUR, field.get_value_as_int());
-    });
-    // Minutes
-    minuteEntry.connect("changed", function (field) {
-        settings.set_int(GS_KEY_MINUTE, field.get_value_as_int());
-    });
-    // Display mode
-    modeEntry.connect("changed", function (field) {
-        settings.set_int(GS_KEY_COUNTDOWN, field.get_active() === 1 ? 1 : 0);
     });
     // Country
     countryEntry.connect("changed", function (field) {
@@ -238,6 +244,14 @@ function buildPrefsWidget() {
         }
         getData(0);
     })
+    // Display mode
+    modeEntry.connect("changed", function (field) {
+        settings.set_int(GS_KEY_COUNTDOWN, field.get_active() === 1 ? 1 : 0);
+    });
+    // Digit
+    digitEntry.connect("changed", function (field) {
+        settings.set_int(GS_KEY_DIGITS, field.get_value_as_int());
+    });
     // Put container on window
     prefsWidget.connect('realize', () => {
         {

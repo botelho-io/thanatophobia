@@ -50,5 +50,10 @@
             <summary>Count down or count up</summary>
             <description/>
         </key>
+        <key type="i" name="rounding">
+            <default>9</default>
+            <summary>Number of digits to display.</summary>
+            <description/>
+        </key>
     </schema>
 </schemalist>

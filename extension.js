@@ -8,6 +8,7 @@ const GS_KEY_HOUR = "hour";
 const GS_KEY_MINUTE = "minute";
 const GS_KEY_LIFE_EXPECTANCY = "expectancy";
 const GS_KEY_COUNTDOWN = "countdown";
+const GS_KEY_DIGITS = "rounding";
 const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -33,10 +34,12 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this.hour = NaN;
         this.minute = NaN;
         this.expectancy = NaN;
-        this.birthDate = new Date();
         this.ms_lastBirthDay = NaN;
         this.ms_betweenBirthdays = NaN;
         this.ageYears = NaN;
+        this.rounding = NaN;
+        this.ms_lastDigitChange = NaN;
+        this.birthDate = new Date();
         this.countDownMode = false;
 
         // Add age indicator label
@@ -63,6 +66,7 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this.gsettings.connect('changed::' + GS_KEY_MINUTE, () => this._userDataUpdated());
         this.gsettings.connect('changed::' + GS_KEY_LIFE_EXPECTANCY, () => this._userDataUpdated());
         this.gsettings.connect('changed::' + GS_KEY_COUNTDOWN, () => this._userDataUpdated());
+        this.gsettings.connect('changed::' + GS_KEY_DIGITS, () => this._userDataUpdated());
 
         // Start refresh loop
         this._refresh();
@@ -91,6 +95,7 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this.minute = this.gsettings.get_int(GS_KEY_MINUTE);
         this.expectancy = this.gsettings.get_double(GS_KEY_LIFE_EXPECTANCY);
         this.countDownMode = this.gsettings.get_int(GS_KEY_COUNTDOWN) === 1;
+        this.rounding = this.gsettings.get_int(GS_KEY_DIGITS);
         // Calculate user's birth date
         this.birthDate = new Date(this.year, this.month - 1, this.day, this.hour, this.minute);
         // TODO: Test the algorithms robustness for people born February 29
@@ -116,12 +121,15 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this.ageYears = Math.abs(new Date(Date.now() - this.birthDate.getTime()).getFullYear() - 1970);
         // Recalculate users life expectancy
         this.menuItem.label.set_text(_(`${(this._getAge() / this.expectancy * 100).toFixed(4).toString()}% of global average life expectancy`));
+        // Calculate time in MS the last digit will be updated
+        const ms_perYear = 365 * 24 * 60 * 60 * 1000;
+        this.ms_lastDigitChange = ms_perYear / Math.pow(10, this.rounding);
     }
 
     // Refresh loop
     _refresh() {
-        this.label.set_text((this.countDownMode?this._getRemainingYears():this._getAge()).toFixed(9).toString());
-        sourceId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, () => this._refresh());
+        this.label.set_text((this.countDownMode?this._getRemainingYears():this._getAge()).toFixed(this.rounding).toString());
+        sourceId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, this.ms_lastDigitChange, () => this._refresh());
     }
 });
 
