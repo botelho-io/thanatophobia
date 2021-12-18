@@ -120,8 +120,8 @@ function buildPrefsWidget() {
     let digitEntry = new Gtk.SpinButton();
     digitEntry.set_sensitive(true);
     digitEntry.set_numeric(true);
-    digitEntry.set_range(0, 10);
-    digitEntry.set_value(limit(0, 10, settings.get_int(GS_KEY_DIGITS)));
+    digitEntry.set_range(0, 15);
+    digitEntry.set_value(limit(0, 15, settings.get_int(GS_KEY_DIGITS)));
     digitEntry.set_increments(1, 2);
 
     /******************************
