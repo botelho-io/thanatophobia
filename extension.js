@@ -67,9 +67,6 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this.gsettings.connect('changed::' + GS_KEY_LIFE_EXPECTANCY, () => this._userDataUpdated());
         this.gsettings.connect('changed::' + GS_KEY_COUNTDOWN, () => this._userDataUpdated());
         this.gsettings.connect('changed::' + GS_KEY_DIGITS, () => this._userDataUpdated());
-
-        // Start refresh loop
-        this._refresh();
     }
 
     // Calculates user's age
@@ -124,12 +121,16 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         // Calculate time in MS the last digit will be updated
         const ms_perYear = 365 * 24 * 60 * 60 * 1000;
         this.ms_lastDigitChange = ms_perYear / Math.pow(10, this.rounding);
+        // Remove previous timeout
+        GLib.Source.remove(sourceId);
+        // Reset refresh loop
+        this._refresh();
     }
 
     // Refresh loop
     _refresh() {
         this.label.set_text((this.countDownMode?this._getRemainingYears():this._getAge()).toFixed(this.rounding).toString());
-        sourceId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, this.ms_lastDigitChange, () => this._refresh());
+        sourceId = GLib.timeout_add(GLib.PRIORITY_LOW, this.ms_lastDigitChange, () => this._refresh());
     }
 });
 
