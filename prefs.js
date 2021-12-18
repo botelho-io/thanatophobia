@@ -62,7 +62,10 @@ function buildPrefsWidget() {
         visible: true
     });
     let countryLink = new Gtk.LinkButton({
-        label: "ISO 3166 Code List", uri: "https://www.iso.org/obp/ui/#search/code/", halign: Gtk.Align.END,visible: true
+        label: "ISO 3166 Code List",
+        uri: "https://www.iso.org/obp/ui/#search/code/",
+        halign: Gtk.Align.END,
+        visible: true
     });
     let modeLabel = new Gtk.Label({
         label: "Display Mode:", halign: Gtk.Align.START, visible: true

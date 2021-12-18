@@ -117,7 +117,7 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         // Calculate the integer part of the user's age
         this.ageYears = Math.abs(new Date(Date.now() - this.birthDate.getTime()).getFullYear() - 1970);
         // Recalculate users life expectancy
-        this.menuItem.label.set_text(_(`${(this._getAge() / this.expectancy * 100).toFixed(4).toString()}% of global average life expectancy`));
+        this.menuItem.label.set_text(_(`${(this._getAge() / this.expectancy * 100).toFixed(2).toString()}% of life expectancy`));
         // Calculate time in MS the last digit will be updated
         const ms_perYear = 365 * 24 * 60 * 60 * 1000;
         this.ms_lastDigitChange = ms_perYear / Math.pow(10, this.rounding);
@@ -129,7 +129,7 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
 
     // Refresh loop
     _refresh() {
-        this.label.set_text((this.countDownMode?this._getRemainingYears():this._getAge()).toFixed(this.rounding).toString());
+        this.label.set_text((this.countDownMode ? this._getRemainingYears() : this._getAge()).toFixed(this.rounding).toString());
         sourceId = GLib.timeout_add(GLib.PRIORITY_LOW, this.ms_lastDigitChange, () => this._refresh());
     }
 });
