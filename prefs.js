@@ -59,6 +59,9 @@ function buildPrefsWidget() {
         halign: Gtk.Align.START,
         visible: true
     });
+    let countryLink = new Gtk.LinkButton({
+        label: "ISO 3166 Code List", uri: "https://www.iso.org/obp/ui/#search/code/", halign: Gtk.Align.END,visible: true
+    });
 
     /******************************
      * Set up widgets
@@ -127,7 +130,9 @@ function buildPrefsWidget() {
     prefsWidget.attach_next_to(sexEntry, sexLabel, Gtk.PositionType.RIGHT, 3, 1);
     // Recalculate
     prefsWidget.attach_next_to(expectancyLabel, sexLabel, Gtk.PositionType.BOTTOM, 4, 1);
-    prefsWidget.attach_next_to(recalculateButton, expectancyLabel, Gtk.PositionType.BOTTOM, 1, 1);
+    prefsWidget.attach(recalculateButton, 0, 6, 1, 1);
+    // Country link
+    prefsWidget.attach(countryLink, 1, 6, 3, 1);
 
     /******************************
      * Add callbacks
