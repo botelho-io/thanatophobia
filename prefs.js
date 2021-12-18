@@ -1,6 +1,6 @@
 'use strict';
 
-const {GObject, Gtk, Soup} = imports.gi;
+const {Gtk, Soup} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
 const GS_KEY_YEAR = "year";
@@ -12,15 +12,14 @@ const GS_KEY_SEX = "sex";
 const GS_KEY_COUNTRY = "country";
 const GS_KEY_LIFE_EXPECTANCY = "expectancy";
 const GS_KEY_LIFE_EXPECTANCY_YEAR = "expectancy-year";
-const DEFAULT_LIFE_EXPECTANCY = 73.2
 const session = new Soup.SessionAsync();
 
 function init() {
 }
 
-function limit(min,max,x) {
-    if(isNaN(x)) return min;
-    return Math.min(max,Math.max(min,x));
+function limit(min, max, x) {
+    if (isNaN(x)) return min;
+    return Math.min(max, Math.max(min, x));
 }
 
 function getExpectancyString(le, year) {
@@ -29,43 +28,31 @@ function getExpectancyString(le, year) {
 
 function GET(url, callback) {
     const request = Soup.Message.new('GET', url);
-    session.queue_message(request, function(session, message) {
+    session.queue_message(request, function (session, message) {
         callback(message.status_code, request.response_body.data);
     });
 }
 
 function buildPrefsWidget() {
-    this.settings = ExtensionUtils.getSettings(
-        GS_SCHEMA
-    );
+    this.settings = ExtensionUtils.getSettings(GS_SCHEMA);
 
     /******************************
      * Set up labels
      ******************************/
     let birthdateLabel = new Gtk.Label({
-        label: "Birthdate:",
-        halign: Gtk.Align.START,
-        visible: true
+        label: "Birthdate:", halign: Gtk.Align.START, visible: true
     });
     let timeLabel = new Gtk.Label({
-        label: "Time:",
-        halign: Gtk.Align.START,
-        visible: true
+        label: "Time:", halign: Gtk.Align.START, visible: true
     });
     let timeSeparatorLabel = new Gtk.Label({
-        label: ":",
-        halign: Gtk.Align.START,
-        visible: true
+        label: ":", halign: Gtk.Align.START, visible: true
     });
     let countryLabel = new Gtk.Label({
-        label: "Country (ISO-a3):",
-        halign: Gtk.Align.START,
-        visible: true
+        label: "Country (ISO-a3):", halign: Gtk.Align.START, visible: true
     });
     let sexLabel = new Gtk.Label({
-        label: "Sex:",
-        halign: Gtk.Align.START,
-        visible: true
+        label: "Sex:", halign: Gtk.Align.START, visible: true
     });
     let expectancyLabel = new Gtk.Label({
         label: getExpectancyString(this.settings.get_double(GS_KEY_LIFE_EXPECTANCY), this.settings.get_int(GS_KEY_LIFE_EXPECTANCY_YEAR)),
@@ -78,25 +65,25 @@ function buildPrefsWidget() {
      ******************************/
     // Calendar
     let birthdateEntry = new Gtk.Calendar({
-        year: this.settings.get_int(GS_KEY_YEAR),
-        month: this.settings.get_int(GS_KEY_MONTH),
-        day: this.settings.get_int(GS_KEY_DAY),
-        halign: Gtk.Align.START,
-        visible: true
-    });
+            year: this.settings.get_int(GS_KEY_YEAR),
+            month: this.settings.get_int(GS_KEY_MONTH) - 1,
+            day: this.settings.get_int(GS_KEY_DAY),
+            halign: Gtk.Align.START,
+            visible: true
+        });
     // Birthdate hours
     let hourEntry = new Gtk.SpinButton();
     hourEntry.set_sensitive(true);
     hourEntry.set_numeric(true);
     hourEntry.set_range(0, 23);
-    hourEntry.set_value(limit(0,23,settings.get_int(GS_KEY_HOUR)));
+    hourEntry.set_value(limit(0, 23, settings.get_int(GS_KEY_HOUR)));
     hourEntry.set_increments(1, 2);
     // Birthdate minutes
     let minuteEntry = new Gtk.SpinButton();
     minuteEntry.set_sensitive(true);
     minuteEntry.set_numeric(true);
     minuteEntry.set_range(0, 59);
-    minuteEntry.set_value(limit(0,59,settings.get_int(GS_KEY_MINUTE)));
+    minuteEntry.set_value(limit(0, 59, settings.get_int(GS_KEY_MINUTE)));
     minuteEntry.set_increments(1, 2);
     // Residency country
     let countryEntry = new Gtk.Entry({
@@ -107,23 +94,23 @@ function buildPrefsWidget() {
     let sexEntry = new Gtk.ComboBoxText()
     sexEntry.append_text("Male");
     sexEntry.append_text("Female");
-    sexEntry.set_active(settings.get_int(GS_KEY_SEX)===1?0:1);
+    sexEntry.set_active(settings.get_int(GS_KEY_SEX) === 1 ? 0 : 1);
     // Recalculate button
-    let recalculateButton = new Gtk.Button({ label: "Recalculate" })
+    let recalculateButton = new Gtk.Button({label: "Recalculate"})
 
     /******************************
      * Add widgets to container
      ******************************/
     // Container
     let prefsWidget = new Gtk.Grid({
-        "margin-start": 18,
-        "margin-end": 18,
-        "margin-top": 18,
-        "margin-bottom": 18,
-        column_spacing: 12,
-        row_spacing: 12,
-        visible: true
-    });
+            "margin-start": 18,
+            "margin-end": 18,
+            "margin-top": 18,
+            "margin-bottom": 18,
+            "column_spacing": 12,
+            "row_spacing": 12,
+            "visible": true
+        });
     // Calendar
     prefsWidget.attach(birthdateLabel, 0, 1, 1, 1);
     prefsWidget.attach_next_to(birthdateEntry, birthdateLabel, Gtk.PositionType.RIGHT, 3, 1);
@@ -146,14 +133,20 @@ function buildPrefsWidget() {
      * Add callbacks
      ******************************/
     // Calendar changed
-    birthdateEntry.connect("day-selected", function (inputField) {
+    function update_date(inputField) {
         settings.set_int(GS_KEY_YEAR, inputField.get_date().get_year());
-        settings.set_int(GS_KEY_MONTH, inputField.get_date().get_month() - 1);
+        settings.set_int(GS_KEY_MONTH, inputField.get_date().get_month());
         settings.set_int(GS_KEY_DAY, inputField.get_date().get_day_of_month());
-    });
+    }
+
+    birthdateEntry.connect("day-selected", update_date);
+    birthdateEntry.connect("next-month", update_date);
+    birthdateEntry.connect("prev-month", update_date);
+    birthdateEntry.connect("next-year", update_date);
+    birthdateEntry.connect("prev-year", update_date);
     // Hours
     hourEntry.connect("changed", function (field) {
-       settings.set_int(GS_KEY_HOUR, field.get_value_as_int());
+        settings.set_int(GS_KEY_HOUR, field.get_value_as_int());
     });
     // Minutes
     minuteEntry.connect("changed", function (field) {
@@ -165,44 +158,62 @@ function buildPrefsWidget() {
     })
     // Sex
     sexEntry.connect("changed", function (field) {
-        settings.set_int(GS_KEY_SEX, field.get_active_text() === "Male"?1:0);
+        settings.set_int(GS_KEY_SEX, field.get_active_text() === "Male" ? 1 : 0);
     });
     // Button
     recalculateButton.connect("clicked", () => {
-        const getData = i => {
-            if(i > 20) {
-                expectancyLabel.set_text(`Could not fetch data, using previous: ${this.settings.get_double(GS_KEY_LIFE_EXPECTANCY)}`)
+        // Users country ISO-3 code
+        let country = settings.get_string(GS_KEY_COUNTRY);
+        // User's gender converted to a string for filtering the results of the WHO API
+        // "BTSX" (both sexes) and "UNK" (unknown) are also available and could be a fall-back
+        let sex = settings.get_int(GS_KEY_SEX) === 1 ? 'MLE' : 'FMLE';
+
+        // The WHO may not have data for every year so "getData" gets called recursively
+        // in order to find the latest year with data available
+        const getData = yearOffset => {
+            // If the data is more than 20 years old, give up, this may also happen
+            // because an invalid country ISO alpha-3 code was provided
+            if (yearOffset > 20) {
+                expectancyLabel.set_text("Could not fetch data, using previous: " + this.settings.get_double(GS_KEY_LIFE_EXPECTANCY) + "\nDid you input a correct ISO alpha-3 country code?")
                 return;
             }
 
-            expectancyLabel.set_text(`Fetching data from WHO (${i} years old)...`);
-            let year = new Date().getFullYear() - i;
-            let country = settings.get_string(GS_KEY_COUNTRY);
-            let sex = settings.get_int(GS_KEY_SEX) === 1?'MLE':'FMLE';
-            GET(`https://apps.who.int/gho/athena/api/GHO/WHOSIS_000001.json?profile=simple&filter=COUNTRY:${country};YEAR:${year};SEX:${sex}`,
-                (status, body) => {
-                    if(status >= 200 || status < 300) {
-                        try {
-                            const json = JSON.parse(body);
-                            if(json["fact"].length === 0) {
-                                getData(i+1);
-                                return;
-                            }
-                            let sum = 0
-                            for(const fact of json['fact']) {
-                                sum += parseFloat(fact["Value"])
-                            }
-                            const expectancy = sum / json["fact"].length;
-                            settings.set_double(GS_KEY_LIFE_EXPECTANCY, expectancy);
-                            settings.set_int(GS_KEY_LIFE_EXPECTANCY_YEAR, year);
-                            expectancyLabel.set_text(getExpectancyString(
-                                    this.settings.get_double(GS_KEY_LIFE_EXPECTANCY),
-                                    this.settings.get_int(GS_KEY_LIFE_EXPECTANCY_YEAR)))
-                        } catch (e) {
-                            getData(i+1);
+            // Try to fetch data from WHO
+            expectancyLabel.set_text(`Fetching data from WHO (${yearOffset} years old)...`);
+            // Get year with ofset
+            let year = new Date().getFullYear() - yearOffset;
+            // Make API call
+            GET(`https://apps.who.int/gho/athena/api/GHO/WHOSIS_000001.json?profile=simple&filter=COUNTRY:${country};YEAR:${year};SEX:${sex}`, (status, body) => {
+                if (status >= 200 || status < 300) {
+                    // Try to parse body on success
+                    try {
+                        const json = JSON.parse(body);
+                        if (json["fact"].length === 0) {
+                            // The JSON returned by the API has no data
+                            getData(yearOffset + 1);
+                            return;
                         }
-                    } else getData(i+1);
-                })
+                        // Average the results returned by the API
+                        let sum = 0
+                        for (const fact of json['fact']) {
+                            sum += parseFloat(fact["Value"])
+                        }
+                        const expectancy = sum / json["fact"].length;
+                        // Update settings
+                        settings.set_double(GS_KEY_LIFE_EXPECTANCY, expectancy);
+                        settings.set_int(GS_KEY_LIFE_EXPECTANCY_YEAR, year);
+                        // Update label
+                        expectancyLabel.set_text(getExpectancyString(this.settings.get_double(GS_KEY_LIFE_EXPECTANCY), this.settings.get_int(GS_KEY_LIFE_EXPECTANCY_YEAR)))
+                    } catch (e) {
+                        // The WHO API sometimes returns badly formatted JSON strings
+                        // it could also change, making the parsing process break
+                        getData(yearOffset + 1);
+                    }
+                } else {
+                    // Fail on error code
+                    getData(yearOffset + 1);
+                }
+            })
         }
         getData(0);
     })
