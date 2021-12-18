@@ -7,6 +7,7 @@ const GS_KEY_YEAR = "year";
 const GS_KEY_HOUR = "hour";
 const GS_KEY_MINUTE = "minute";
 const GS_KEY_LIFE_EXPECTANCY = "expectancy";
+const GS_KEY_COUNTDOWN = "countdown";
 const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -36,6 +37,7 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this.ms_lastBirthDay = NaN;
         this.ms_betweenBirthdays = NaN;
         this.ageYears = NaN;
+        this.countDownMode = false;
 
         // Add age indicator label
         this.label = new St.Label({
@@ -60,6 +62,7 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this.gsettings.connect('changed::' + GS_KEY_HOUR, () => this._userDataUpdated());
         this.gsettings.connect('changed::' + GS_KEY_MINUTE, () => this._userDataUpdated());
         this.gsettings.connect('changed::' + GS_KEY_LIFE_EXPECTANCY, () => this._userDataUpdated());
+        this.gsettings.connect('changed::' + GS_KEY_COUNTDOWN, () => this._userDataUpdated());
 
         // Start refresh loop
         this._refresh();
@@ -70,7 +73,12 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         // Calculate the fractional part of the user's age
         const ageFraction = (Date.now() - this.ms_lastBirthDay) / this.ms_betweenBirthdays;
         // The user's age is the integer part of the date + the fractional part
-        return (this.ageYears + ageFraction).toFixed(9);
+        return (this.ageYears + ageFraction);
+    }
+
+    // Calculates user's age
+    _getRemainingYears() {
+        return this.expectancy - this._getAge();
     }
 
     // Reads data from settings file
@@ -82,6 +90,7 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this.hour = this.gsettings.get_int(GS_KEY_HOUR);
         this.minute = this.gsettings.get_int(GS_KEY_MINUTE);
         this.expectancy = this.gsettings.get_double(GS_KEY_LIFE_EXPECTANCY);
+        this.countDownMode = this.gsettings.get_int(GS_KEY_COUNTDOWN) === 1;
         // Calculate user's birth date
         this.birthDate = new Date(this.year, this.month - 1, this.day, this.hour, this.minute);
         // TODO: Test the algorithms robustness for people born February 29
@@ -111,7 +120,7 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
 
     // Refresh loop
     _refresh() {
-        this.label.set_text(this._getAge().toString());
+        this.label.set_text((this.countDownMode?this._getRemainingYears():this._getAge()).toFixed(9).toString());
         sourceId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, () => this._refresh());
     }
 });
