@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const GETTEXT_DOMAIN = 'thanatophobia-extension';
+const GETTEXT_DOMAIN = "thanatophobia-extension";
 const GS_KEY_DAY = "day";
 const GS_KEY_MONTH = "month";
 const GS_KEY_YEAR = "year";
@@ -25,7 +25,7 @@ let sourceId = null;
 const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button {
     _init() {
         // Call constructor
-        super._init(0.0, _('Current Age Indicator'));
+        super._init(0.0, _("Current Age Indicator"));
 
         // Init variables
         this.year = NaN;
@@ -49,7 +49,7 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this.add_child(this.label);
 
         // Add popup menu "life-percentage" label
-        this.menuItem = new PopupMenu.PopupMenuItem(_('...'));
+        this.menuItem = new PopupMenu.PopupMenuItem(_("..."));
         this.menu.addMenuItem(this.menuItem);
 
         // Open settings in order to read from user data
@@ -59,14 +59,14 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this._userDataUpdated();
 
         // Set-up update when user data is modified
-        this.gsettings.connect('changed::' + GS_KEY_DAY, () => this._userDataUpdated());
-        this.gsettings.connect('changed::' + GS_KEY_MONTH, () => this._userDataUpdated());
-        this.gsettings.connect('changed::' + GS_KEY_YEAR, () => this._userDataUpdated());
-        this.gsettings.connect('changed::' + GS_KEY_HOUR, () => this._userDataUpdated());
-        this.gsettings.connect('changed::' + GS_KEY_MINUTE, () => this._userDataUpdated());
-        this.gsettings.connect('changed::' + GS_KEY_LIFE_EXPECTANCY, () => this._userDataUpdated());
-        this.gsettings.connect('changed::' + GS_KEY_COUNTDOWN, () => this._userDataUpdated());
-        this.gsettings.connect('changed::' + GS_KEY_DIGITS, () => this._userDataUpdated());
+        this.gsettings.connect("changed::" + GS_KEY_DAY, () => this._userDataUpdated());
+        this.gsettings.connect("changed::" + GS_KEY_MONTH, () => this._userDataUpdated());
+        this.gsettings.connect("changed::" + GS_KEY_YEAR, () => this._userDataUpdated());
+        this.gsettings.connect("changed::" + GS_KEY_HOUR, () => this._userDataUpdated());
+        this.gsettings.connect("changed::" + GS_KEY_MINUTE, () => this._userDataUpdated());
+        this.gsettings.connect("changed::" + GS_KEY_LIFE_EXPECTANCY, () => this._userDataUpdated());
+        this.gsettings.connect("changed::" + GS_KEY_COUNTDOWN, () => this._userDataUpdated());
+        this.gsettings.connect("changed::" + GS_KEY_DIGITS, () => this._userDataUpdated());
     }
 
     // Calculates user's age

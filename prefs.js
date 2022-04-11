@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const {Gtk, Soup} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -30,7 +30,7 @@ function getExpectancyString(le, year) {
 
 function GET(url, callback) {
     try {
-        const request = Soup.Message.new('GET', url);
+        const request = Soup.Message.new("GET", url);
         const data = session.send_and_read(request, null)
         if(!data) callback(null)
         else callback(data.get_data())
@@ -200,7 +200,7 @@ function buildPrefsWidget() {
         let country = settings.get_string(GS_KEY_COUNTRY);
         // User's gender converted to a string for filtering the results of the WHO API
         // "BTSX" (both sexes) and "UNK" (unknown) are also available and could be a fall-back
-        let sex = settings.get_int(GS_KEY_SEX) === 1 ? 'MLE' : 'FMLE';
+        let sex = settings.get_int(GS_KEY_SEX) === 1 ? "MLE" : "FMLE";
 
         // The WHO may not have data for every year so "getData" gets called recursively
         // in order to find the latest year with data available
@@ -229,7 +229,7 @@ function buildPrefsWidget() {
                         }
                         // Average the results returned by the API
                         let sum = 0
-                        for (const fact of json['fact']) {
+                        for (const fact of json["fact"]) {
                             sum += parseFloat(fact["Value"])
                         }
                         const expectancy = sum / json["fact"].length;
@@ -260,7 +260,7 @@ function buildPrefsWidget() {
         settings.set_int(GS_KEY_DIGITS, field.get_value_as_int());
     });
     // Put container on window
-    prefsWidget.connect('realize', () => {
+    prefsWidget.connect("realize", () => {
         {
             let window = prefsWidget.get_root();
             window.default_width = 300;
