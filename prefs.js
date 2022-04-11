@@ -102,7 +102,7 @@ function buildPrefsWidget() {
     minuteEntry.set_numeric(true);
     minuteEntry.set_range(0, 59);
     minuteEntry.set_value(limit(0, 59, settings.get_int(GS_KEY_MINUTE)));
-    minuteEntry.set_increments(1, 2);
+    minuteEntry.set_increments(1, 5);
     // Residency country
     let countryEntry = new Gtk.Entry({
         buffer: new Gtk.EntryBuffer()
@@ -183,8 +183,12 @@ function buildPrefsWidget() {
     birthdateEntry.connect("next-year", update_date);
     birthdateEntry.connect("prev-year", update_date);
     // Hours
-    hourEntry.connect("changed", function (field) {
+    hourEntry.connect("value-changed", function (field) {
         settings.set_int(GS_KEY_HOUR, field.get_value_as_int());
+    });
+    // Minutes
+    minuteEntry.connect("value-changed", function (field) {
+        settings.set_int(GS_KEY_MINUTE, field.get_value_as_int());
     });
     // Country
     countryEntry.connect("changed", function (field) {
