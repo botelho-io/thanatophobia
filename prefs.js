@@ -14,7 +14,7 @@ const GS_KEY_LIFE_EXPECTANCY = "expectancy";
 const GS_KEY_LIFE_EXPECTANCY_YEAR = "expectancy-year";
 const GS_KEY_COUNTDOWN = "countdown";
 const GS_KEY_DIGITS = "rounding";
-const session = new Soup.SessionAsync();
+const session = new Soup.Session();
 
 function init() {
 }
@@ -29,10 +29,14 @@ function getExpectancyString(le, year) {
 }
 
 function GET(url, callback) {
-    const request = Soup.Message.new('GET', url);
-    session.queue_message(request, function (session, message) {
-        callback(message.status_code, request.response_body.data);
-    });
+    try {
+        const request = Soup.Message.new('GET', url);
+        const data = session.send_and_read(request, null)
+        if(!data) callback(null)
+        else callback(data.get_data())
+    } catch (e) {
+        callback(null)
+    }
 }
 
 function buildPrefsWidget() {
@@ -210,11 +214,11 @@ function buildPrefsWidget() {
 
             // Try to fetch data from WHO
             expectancyLabel.set_text(`Fetching data from WHO (${yearOffset} years old)...`);
-            // Get year with ofset
+            // Get year with offset
             let year = new Date().getFullYear() - yearOffset;
             // Make API call
-            GET(`https://apps.who.int/gho/athena/api/GHO/WHOSIS_000001.json?profile=simple&filter=COUNTRY:${country};YEAR:${year};SEX:${sex}`, (status, body) => {
-                if (status >= 200 || status < 300) {
+            GET(`https://apps.who.int/gho/athena/api/GHO/WHOSIS_000001.json?profile=simple&filter=COUNTRY:${country};YEAR:${year};SEX:${sex}`, (body) => {
+                if (body) {
                     // Try to parse body on success
                     try {
                         const json = JSON.parse(body);
