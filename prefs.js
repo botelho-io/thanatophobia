@@ -32,7 +32,7 @@ function GET(url, callback) {
     try {
         const request = Soup.Message.new("GET", url);
         const data = session.send_and_read(request, null)
-        if(!data) callback(null)
+        if (!data) callback(null)
         else callback(data.get_data())
     } catch (e) {
         callback(null)

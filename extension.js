@@ -120,7 +120,7 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this.menuItem.label.set_text(_(`${(this._getAge() / this.expectancy * 100).toFixed(2).toString()}% of life expectancy`));
         // Calculate time in MS the last digit will be updated
         const ms_perYear = 365 * 24 * 60 * 60 * 1000;
-        this.ms_lastDigitChange = Math.floor(Math.max(ms_perYear / Math.pow(10, this.rounding), 1000/60));
+        this.ms_lastDigitChange = Math.floor(Math.max(ms_perYear / Math.pow(10, this.rounding), 1000 / 60));
         // Remove previous timeout
         GLib.Source.remove(sourceId);
         // Reset refresh loop
