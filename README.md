@@ -25,7 +25,7 @@ You might need to log out for the extension to be listed.
 The following can be configured from the settings menu:
 + Select the date and time of your birth.
 + Select your birth sex and the country where you live.
-+ Click `Recalculate` to automatically fetch life expectancy from the WHO.
++ Click `Recalculate` to automatically fetch life expectancy from the WHO. (currently broken)
 + Select a display mode.
   + Count up from your birth, giving you your age.
   + Count down from your life expectancy, giving you the number of years until your expected death.
