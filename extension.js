@@ -11,19 +11,19 @@ const GS_KEY_COUNTDOWN = "countdown";
 const GS_KEY_DIGITS = "rounding";
 const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const GLib = imports.gi.GLib;
-const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const _ = Gettext.gettext;
-const {GObject, St, Clutter} = imports.gi;
+import {Extension, gettext as _} from "resource:///org/gnome/shell/extensions/extension.js";
+import * as Main from "resource:///org/gnome/shell/ui/main.js";
+import * as PanelMenu from "resource:///org/gnome/shell/ui/panelMenu.js";
+import * as PopupMenu from "resource:///org/gnome/shell/ui/popupMenu.js";
+import Clutter from "gi://Clutter";
+import GLib from "gi://GLib";
+import GObject from "gi://GObject";
+import St from "gi://St";
 
 let sourceId = null;
 
 const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button {
-    _init() {
+    _init(gsettings) {
         // Call constructor
         super._init(0.0, _("Current Age Indicator"));
 
@@ -53,7 +53,7 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this.menu.addMenuItem(this.menuItem);
 
         // Open settings in order to read from user data
-        this.gsettings = ExtensionUtils.getSettings(GS_SCHEMA);
+        this.gsettings = gsettings;
 
         // Read from userdata for the first time
         this._userDataUpdated();
@@ -134,13 +134,14 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
     }
 });
 
-class Extension {
-    constructor(uuid) {
-        this._uuid = uuid;
+export default class ThanatophobiaExtension extends Extension {
+    constructor(meta) {
+        super(meta);
+        this._uuid = meta.uuid;
     }
 
     enable() {
-        this._indicator = new Indicator();
+        this._indicator = new Indicator(this.getSettings(GS_SCHEMA));
         Main.panel.addToStatusArea(this._uuid, this._indicator);
     }
 
@@ -152,8 +153,4 @@ class Extension {
         this._indicator.destroy();
         this._indicator = null;
     }
-}
-
-function init(meta) {
-    return new Extension(meta.uuid);
 }
