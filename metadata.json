@@ -2,11 +2,9 @@
   "name": "Thanatophobia",
   "description": "Displays your age in real time. \n\nGreat source of motivation according to terror management theory!",
   "uuid": "thanatophobia@yatx.one",
-  "version": 11,
+  "version": 12,
   "shell-version": [
-    "40",
-    "41",
-    "42"
+    "45"
   ],
   "url": "https://github.com/keyoted/thanatophobia"
 }
