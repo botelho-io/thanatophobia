@@ -1,6 +1,5 @@
 "use strict";
 
-const GETTEXT_DOMAIN = "thanatophobia-extension";
 const GS_KEY_DAY = "day";
 const GS_KEY_MONTH = "month";
 const GS_KEY_YEAR = "year";
@@ -11,19 +10,26 @@ const GS_KEY_COUNTDOWN = "countdown";
 const GS_KEY_DIGITS = "rounding";
 const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const GLib = imports.gi.GLib;
-const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const _ = Gettext.gettext;
-const {GObject, St, Clutter} = imports.gi;
+
+// const GLib = imports.gi.GLib;
+import GLib from 'gi://GLib';
+// const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
+import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+// const Main = imports.ui.main;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+// const PanelMenu = imports.ui.panelMenu;
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+// const PopupMenu = imports.ui.popupMenu;
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+// const {GObject, St, Clutter} = imports.gi;
+import GObject from 'gi://GObject';
+import Clutter from 'gi://Clutter';
+import St from 'gi://St';
 
 let sourceId = null;
 
 const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button {
-    _init() {
+    _init(extension) {
         // Call constructor
         super._init(0.0, _("Current Age Indicator"));
 
@@ -53,7 +59,7 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
         this.menu.addMenuItem(this.menuItem);
 
         // Open settings in order to read from user data
-        this.gsettings = ExtensionUtils.getSettings(GS_SCHEMA);
+        this.gsettings = extension.getSettings(GS_SCHEMA);
 
         // Read from userdata for the first time
         this._userDataUpdated();
@@ -134,14 +140,14 @@ const Indicator = GObject.registerClass(class Indicator extends PanelMenu.Button
     }
 });
 
-class Extension {
-    constructor(uuid) {
-        this._uuid = uuid;
+export default class ThanatophobiaExtension extends Extension {
+    constructor(metadata) {
+        super(metadata);
     }
 
     enable() {
-        this._indicator = new Indicator();
-        Main.panel.addToStatusArea(this._uuid, this._indicator);
+        this._indicator = new Indicator(this);
+        Main.panel.addToStatusArea(this.uuid, this._indicator);
     }
 
     disable() {
@@ -152,8 +158,4 @@ class Extension {
         this._indicator.destroy();
         this._indicator = null;
     }
-}
-
-function init(meta) {
-    return new Extension(meta.uuid);
 }

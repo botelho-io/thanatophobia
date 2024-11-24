@@ -13,9 +13,14 @@ https://extensions.gnome.org/extension/4425/thanatophobia
 ### Manually:
 
 ```shell
-mkdir -p ~/.local/share/gnome-shell/extensions && \
-git clone https://github.com/yatxone/thanatophobia.git \
-~/.local/share/gnome-shell/extensions/thanatophobia@yatx.one
+git clone https://github.com/botelho-io/thanatophobia.git
+mv thanatophobia thanatophobia@yatx.one
+sudo rm -r $XDG_DATA_HOME/gnome-shell/extensions/thanatophobia@yatx.one/
+glib-compile-schemas thanatophobia@yatx.one/schemas
+gnome-extensions pack --force ./thanatophobia@yatx.one
+sudo gnome-extensions uninstall thanatophobia@yatx.one
+sudo gnome-extensions install --force ./thanatophobia@yatx.one.shell-extension.zip
+thanatophobia@yatx.one/wayland.sh > thanatophobia@yatx.one/log.txt
 ```
 
 You might need to log out for the extension to be listed.

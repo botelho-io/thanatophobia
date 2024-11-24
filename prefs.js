@@ -1,8 +1,10 @@
 "use strict";
 
-const {Gtk, Soup} = imports.gi;
-const ExtensionUtils = imports.misc.extensionUtils;
-const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
+import Gtk from 'gi://Gtk';
+import Adw from 'gi://Adw';
+import Soup from 'gi://Soup?version=3.0';
+import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+
 const GS_KEY_YEAR = "year";
 const GS_KEY_MONTH = "month";
 const GS_KEY_DAY = "day";
@@ -11,21 +13,79 @@ const GS_KEY_MINUTE = "minute";
 const GS_KEY_SEX = "sex";
 const GS_KEY_COUNTRY = "country";
 const GS_KEY_LIFE_EXPECTANCY = "expectancy";
-const GS_KEY_LIFE_EXPECTANCY_YEAR = "expectancy-year";
+const GS_KEY_LIFE_EXPECTANCY_SOURCE = "expectancy-source";
 const GS_KEY_COUNTDOWN = "countdown";
 const GS_KEY_DIGITS = "rounding";
 const session = new Soup.Session();
 
-function init() {
-}
+const COUNTRY_LIST = [{"name":"Afghanistan","alpha-3":"AFG","country-code":"004"},{"name":"Åland Islands","alpha-3":"ALA","country-code":"248"},{"name":"Albania","alpha-3":"ALB","country-code":"008"},{"name":"Algeria","alpha-3":"DZA","country-code":"012"},{"name":"American Samoa","alpha-3":"ASM","country-code":"016"},{"name":"Andorra","alpha-3":"AND","country-code":"020"},{"name":"Angola","alpha-3":"AGO","country-code":"024"},{"name":"Anguilla","alpha-3":"AIA","country-code":"660"},{"name":"Antarctica","alpha-3":"ATA","country-code":"010"},{"name":"Antigua and Barbuda","alpha-3":"ATG","country-code":"028"},{"name":"Argentina","alpha-3":"ARG","country-code":"032"},{"name":"Armenia","alpha-3":"ARM","country-code":"051"},{"name":"Aruba","alpha-3":"ABW","country-code":"533"},{"name":"Australia","alpha-3":"AUS","country-code":"036"},{"name":"Austria","alpha-3":"AUT","country-code":"040"},{"name":"Azerbaijan","alpha-3":"AZE","country-code":"031"},{"name":"Bahamas","alpha-3":"BHS","country-code":"044"},{"name":"Bahrain","alpha-3":"BHR","country-code":"048"},{"name":"Bangladesh","alpha-3":"BGD","country-code":"050"},{"name":"Barbados","alpha-3":"BRB","country-code":"052"},{"name":"Belarus","alpha-3":"BLR","country-code":"112"},{"name":"Belgium","alpha-3":"BEL","country-code":"056"},{"name":"Belize","alpha-3":"BLZ","country-code":"084"},{"name":"Benin","alpha-3":"BEN","country-code":"204"},{"name":"Bermuda","alpha-3":"BMU","country-code":"060"},{"name":"Bhutan","alpha-3":"BTN","country-code":"064"},{"name":"Bolivia, Plurinational State of","alpha-3":"BOL","country-code":"068"},{"name":"Bonaire, Sint Eustatius and Saba","alpha-3":"BES","country-code":"535"},{"name":"Bosnia and Herzegovina","alpha-3":"BIH","country-code":"070"},{"name":"Botswana","alpha-3":"BWA","country-code":"072"},{"name":"Bouvet Island","alpha-3":"BVT","country-code":"074"},{"name":"Brazil","alpha-3":"BRA","country-code":"076"},{"name":"British Indian Ocean Territory","alpha-3":"IOT","country-code":"086"},{"name":"Brunei Darussalam","alpha-3":"BRN","country-code":"096"},{"name":"Bulgaria","alpha-3":"BGR","country-code":"100"},{"name":"Burkina Faso","alpha-3":"BFA","country-code":"854"},{"name":"Burundi","alpha-3":"BDI","country-code":"108"},{"name":"Cabo Verde","alpha-3":"CPV","country-code":"132"},{"name":"Cambodia","alpha-3":"KHM","country-code":"116"},{"name":"Cameroon","alpha-3":"CMR","country-code":"120"},{"name":"Canada","alpha-3":"CAN","country-code":"124"},{"name":"Cayman Islands","alpha-3":"CYM","country-code":"136"},{"name":"Central African Republic","alpha-3":"CAF","country-code":"140"},{"name":"Chad","alpha-3":"TCD","country-code":"148"},{"name":"Chile","alpha-3":"CHL","country-code":"152"},{"name":"China","alpha-3":"CHN","country-code":"156"},{"name":"Christmas Island","alpha-3":"CXR","country-code":"162"},{"name":"Cocos (Keeling) Islands","alpha-3":"CCK","country-code":"166"},{"name":"Colombia","alpha-3":"COL","country-code":"170"},{"name":"Comoros","alpha-3":"COM","country-code":"174"},{"name":"Congo","alpha-3":"COG","country-code":"178"},{"name":"Congo, Democratic Republic of the","alpha-3":"COD","country-code":"180"},{"name":"Cook Islands","alpha-3":"COK","country-code":"184"},{"name":"Costa Rica","alpha-3":"CRI","country-code":"188"},{"name":"Côte d'Ivoire","alpha-3":"CIV","country-code":"384"},{"name":"Croatia","alpha-3":"HRV","country-code":"191"},{"name":"Cuba","alpha-3":"CUB","country-code":"192"},{"name":"Curaçao","alpha-3":"CUW","country-code":"531"},{"name":"Cyprus","alpha-3":"CYP","country-code":"196"},{"name":"Czechia","alpha-3":"CZE","country-code":"203"},{"name":"Denmark","alpha-3":"DNK","country-code":"208"},{"name":"Djibouti","alpha-3":"DJI","country-code":"262"},{"name":"Dominica","alpha-3":"DMA","country-code":"212"},{"name":"Dominican Republic","alpha-3":"DOM","country-code":"214"},{"name":"Ecuador","alpha-3":"ECU","country-code":"218"},{"name":"Egypt","alpha-3":"EGY","country-code":"818"},{"name":"El Salvador","alpha-3":"SLV","country-code":"222"},{"name":"Equatorial Guinea","alpha-3":"GNQ","country-code":"226"},{"name":"Eritrea","alpha-3":"ERI","country-code":"232"},{"name":"Estonia","alpha-3":"EST","country-code":"233"},{"name":"Eswatini","alpha-3":"SWZ","country-code":"748"},{"name":"Ethiopia","alpha-3":"ETH","country-code":"231"},{"name":"Falkland Islands (Malvinas)","alpha-3":"FLK","country-code":"238"},{"name":"Faroe Islands","alpha-3":"FRO","country-code":"234"},{"name":"Fiji","alpha-3":"FJI","country-code":"242"},{"name":"Finland","alpha-3":"FIN","country-code":"246"},{"name":"France","alpha-3":"FRA","country-code":"250"},{"name":"French Guiana","alpha-3":"GUF","country-code":"254"},{"name":"French Polynesia","alpha-3":"PYF","country-code":"258"},{"name":"French Southern Territories","alpha-3":"ATF","country-code":"260"},{"name":"Gabon","alpha-3":"GAB","country-code":"266"},{"name":"Gambia","alpha-3":"GMB","country-code":"270"},{"name":"Georgia","alpha-3":"GEO","country-code":"268"},{"name":"Germany","alpha-3":"DEU","country-code":"276"},{"name":"Ghana","alpha-3":"GHA","country-code":"288"},{"name":"Gibraltar","alpha-3":"GIB","country-code":"292"},{"name":"Greece","alpha-3":"GRC","country-code":"300"},{"name":"Greenland","alpha-3":"GRL","country-code":"304"},{"name":"Grenada","alpha-3":"GRD","country-code":"308"},{"name":"Guadeloupe","alpha-3":"GLP","country-code":"312"},{"name":"Guam","alpha-3":"GUM","country-code":"316"},{"name":"Guatemala","alpha-3":"GTM","country-code":"320"},{"name":"Guernsey","alpha-3":"GGY","country-code":"831"},{"name":"Guinea","alpha-3":"GIN","country-code":"324"},{"name":"Guinea-Bissau","alpha-3":"GNB","country-code":"624"},{"name":"Guyana","alpha-3":"GUY","country-code":"328"},{"name":"Haiti","alpha-3":"HTI","country-code":"332"},{"name":"Heard Island and McDonald Islands","alpha-3":"HMD","country-code":"334"},{"name":"Holy See","alpha-3":"VAT","country-code":"336"},{"name":"Honduras","alpha-3":"HND","country-code":"340"},{"name":"Hong Kong","alpha-3":"HKG","country-code":"344"},{"name":"Hungary","alpha-3":"HUN","country-code":"348"},{"name":"Iceland","alpha-3":"ISL","country-code":"352"},{"name":"India","alpha-3":"IND","country-code":"356"},{"name":"Indonesia","alpha-3":"IDN","country-code":"360"},{"name":"Iran, Islamic Republic of","alpha-3":"IRN","country-code":"364"},{"name":"Iraq","alpha-3":"IRQ","country-code":"368"},{"name":"Ireland","alpha-3":"IRL","country-code":"372"},{"name":"Isle of Man","alpha-3":"IMN","country-code":"833"},{"name":"Israel","alpha-3":"ISR","country-code":"376"},{"name":"Italy","alpha-3":"ITA","country-code":"380"},{"name":"Jamaica","alpha-3":"JAM","country-code":"388"},{"name":"Japan","alpha-3":"JPN","country-code":"392"},{"name":"Jersey","alpha-3":"JEY","country-code":"832"},{"name":"Jordan","alpha-3":"JOR","country-code":"400"},{"name":"Kazakhstan","alpha-3":"KAZ","country-code":"398"},{"name":"Kenya","alpha-3":"KEN","country-code":"404"},{"name":"Kiribati","alpha-3":"KIR","country-code":"296"},{"name":"Korea, Democratic People's Republic of","alpha-3":"PRK","country-code":"408"},{"name":"Korea, Republic of","alpha-3":"KOR","country-code":"410"},{"name":"Kuwait","alpha-3":"KWT","country-code":"414"},{"name":"Kyrgyzstan","alpha-3":"KGZ","country-code":"417"},{"name":"Lao People's Democratic Republic","alpha-3":"LAO","country-code":"418"},{"name":"Latvia","alpha-3":"LVA","country-code":"428"},{"name":"Lebanon","alpha-3":"LBN","country-code":"422"},{"name":"Lesotho","alpha-3":"LSO","country-code":"426"},{"name":"Liberia","alpha-3":"LBR","country-code":"430"},{"name":"Libya","alpha-3":"LBY","country-code":"434"},{"name":"Liechtenstein","alpha-3":"LIE","country-code":"438"},{"name":"Lithuania","alpha-3":"LTU","country-code":"440"},{"name":"Luxembourg","alpha-3":"LUX","country-code":"442"},{"name":"Macao","alpha-3":"MAC","country-code":"446"},{"name":"Madagascar","alpha-3":"MDG","country-code":"450"},{"name":"Malawi","alpha-3":"MWI","country-code":"454"},{"name":"Malaysia","alpha-3":"MYS","country-code":"458"},{"name":"Maldives","alpha-3":"MDV","country-code":"462"},{"name":"Mali","alpha-3":"MLI","country-code":"466"},{"name":"Malta","alpha-3":"MLT","country-code":"470"},{"name":"Marshall Islands","alpha-3":"MHL","country-code":"584"},{"name":"Martinique","alpha-3":"MTQ","country-code":"474"},{"name":"Mauritania","alpha-3":"MRT","country-code":"478"},{"name":"Mauritius","alpha-3":"MUS","country-code":"480"},{"name":"Mayotte","alpha-3":"MYT","country-code":"175"},{"name":"Mexico","alpha-3":"MEX","country-code":"484"},{"name":"Micronesia, Federated States of","alpha-3":"FSM","country-code":"583"},{"name":"Moldova, Republic of","alpha-3":"MDA","country-code":"498"},{"name":"Monaco","alpha-3":"MCO","country-code":"492"},{"name":"Mongolia","alpha-3":"MNG","country-code":"496"},{"name":"Montenegro","alpha-3":"MNE","country-code":"499"},{"name":"Montserrat","alpha-3":"MSR","country-code":"500"},{"name":"Morocco","alpha-3":"MAR","country-code":"504"},{"name":"Mozambique","alpha-3":"MOZ","country-code":"508"},{"name":"Myanmar","alpha-3":"MMR","country-code":"104"},{"name":"Namibia","alpha-3":"NAM","country-code":"516"},{"name":"Nauru","alpha-3":"NRU","country-code":"520"},{"name":"Nepal","alpha-3":"NPL","country-code":"524"},{"name":"Netherlands, Kingdom of the","alpha-3":"NLD","country-code":"528"},{"name":"New Caledonia","alpha-3":"NCL","country-code":"540"},{"name":"New Zealand","alpha-3":"NZL","country-code":"554"},{"name":"Nicaragua","alpha-3":"NIC","country-code":"558"},{"name":"Niger","alpha-3":"NER","country-code":"562"},{"name":"Nigeria","alpha-3":"NGA","country-code":"566"},{"name":"Niue","alpha-3":"NIU","country-code":"570"},{"name":"Norfolk Island","alpha-3":"NFK","country-code":"574"},{"name":"North Macedonia","alpha-3":"MKD","country-code":"807"},{"name":"Northern Mariana Islands","alpha-3":"MNP","country-code":"580"},{"name":"Norway","alpha-3":"NOR","country-code":"578"},{"name":"Oman","alpha-3":"OMN","country-code":"512"},{"name":"Pakistan","alpha-3":"PAK","country-code":"586"},{"name":"Palau","alpha-3":"PLW","country-code":"585"},{"name":"Palestine, State of","alpha-3":"PSE","country-code":"275"},{"name":"Panama","alpha-3":"PAN","country-code":"591"},{"name":"Papua New Guinea","alpha-3":"PNG","country-code":"598"},{"name":"Paraguay","alpha-3":"PRY","country-code":"600"},{"name":"Peru","alpha-3":"PER","country-code":"604"},{"name":"Philippines","alpha-3":"PHL","country-code":"608"},{"name":"Pitcairn","alpha-3":"PCN","country-code":"612"},{"name":"Poland","alpha-3":"POL","country-code":"616"},{"name":"Portugal","alpha-3":"PRT","country-code":"620"},{"name":"Puerto Rico","alpha-3":"PRI","country-code":"630"},{"name":"Qatar","alpha-3":"QAT","country-code":"634"},{"name":"Réunion","alpha-3":"REU","country-code":"638"},{"name":"Romania","alpha-3":"ROU","country-code":"642"},{"name":"Russian Federation","alpha-3":"RUS","country-code":"643"},{"name":"Rwanda","alpha-3":"RWA","country-code":"646"},{"name":"Saint Barthélemy","alpha-3":"BLM","country-code":"652"},{"name":"Saint Helena, Ascension and Tristan da Cunha","alpha-3":"SHN","country-code":"654"},{"name":"Saint Kitts and Nevis","alpha-3":"KNA","country-code":"659"},{"name":"Saint Lucia","alpha-3":"LCA","country-code":"662"},{"name":"Saint Martin (French part)","alpha-3":"MAF","country-code":"663"},{"name":"Saint Pierre and Miquelon","alpha-3":"SPM","country-code":"666"},{"name":"Saint Vincent and the Grenadines","alpha-3":"VCT","country-code":"670"},{"name":"Samoa","alpha-3":"WSM","country-code":"882"},{"name":"San Marino","alpha-3":"SMR","country-code":"674"},{"name":"Sao Tome and Principe","alpha-3":"STP","country-code":"678"},{"name":"Saudi Arabia","alpha-3":"SAU","country-code":"682"},{"name":"Senegal","alpha-3":"SEN","country-code":"686"},{"name":"Serbia","alpha-3":"SRB","country-code":"688"},{"name":"Seychelles","alpha-3":"SYC","country-code":"690"},{"name":"Sierra Leone","alpha-3":"SLE","country-code":"694"},{"name":"Singapore","alpha-3":"SGP","country-code":"702"},{"name":"Sint Maarten (Dutch part)","alpha-3":"SXM","country-code":"534"},{"name":"Slovakia","alpha-3":"SVK","country-code":"703"},{"name":"Slovenia","alpha-3":"SVN","country-code":"705"},{"name":"Solomon Islands","alpha-3":"SLB","country-code":"090"},{"name":"Somalia","alpha-3":"SOM","country-code":"706"},{"name":"South Africa","alpha-3":"ZAF","country-code":"710"},{"name":"South Georgia and the South Sandwich Islands","alpha-3":"SGS","country-code":"239"},{"name":"South Sudan","alpha-3":"SSD","country-code":"728"},{"name":"Spain","alpha-3":"ESP","country-code":"724"},{"name":"Sri Lanka","alpha-3":"LKA","country-code":"144"},{"name":"Sudan","alpha-3":"SDN","country-code":"729"},{"name":"Suriname","alpha-3":"SUR","country-code":"740"},{"name":"Svalbard and Jan Mayen","alpha-3":"SJM","country-code":"744"},{"name":"Sweden","alpha-3":"SWE","country-code":"752"},{"name":"Switzerland","alpha-3":"CHE","country-code":"756"},{"name":"Syrian Arab Republic","alpha-3":"SYR","country-code":"760"},{"name":"Taiwan, Province of China","alpha-3":"TWN","country-code":"158"},{"name":"Tajikistan","alpha-3":"TJK","country-code":"762"},{"name":"Tanzania, United Republic of","alpha-3":"TZA","country-code":"834"},{"name":"Thailand","alpha-3":"THA","country-code":"764"},{"name":"Timor-Leste","alpha-3":"TLS","country-code":"626"},{"name":"Togo","alpha-3":"TGO","country-code":"768"},{"name":"Tokelau","alpha-3":"TKL","country-code":"772"},{"name":"Tonga","alpha-3":"TON","country-code":"776"},{"name":"Trinidad and Tobago","alpha-3":"TTO","country-code":"780"},{"name":"Tunisia","alpha-3":"TUN","country-code":"788"},{"name":"Türkiye","alpha-3":"TUR","country-code":"792"},{"name":"Turkmenistan","alpha-3":"TKM","country-code":"795"},{"name":"Turks and Caicos Islands","alpha-3":"TCA","country-code":"796"},{"name":"Tuvalu","alpha-3":"TUV","country-code":"798"},{"name":"Uganda","alpha-3":"UGA","country-code":"800"},{"name":"Ukraine","alpha-3":"UKR","country-code":"804"},{"name":"United Arab Emirates","alpha-3":"ARE","country-code":"784"},{"name":"United Kingdom of Great Britain and Northern Ireland","alpha-3":"GBR","country-code":"826"},{"name":"United States of America","alpha-3":"USA","country-code":"840"},{"name":"United States Minor Outlying Islands","alpha-3":"UMI","country-code":"581"},{"name":"Uruguay","alpha-3":"URY","country-code":"858"},{"name":"Uzbekistan","alpha-3":"UZB","country-code":"860"},{"name":"Vanuatu","alpha-3":"VUT","country-code":"548"},{"name":"Venezuela, Bolivarian Republic of","alpha-3":"VEN","country-code":"862"},{"name":"Viet Nam","alpha-3":"VNM","country-code":"704"},{"name":"Virgin Islands (British)","alpha-3":"VGB","country-code":"092"},{"name":"Virgin Islands (U.S.)","alpha-3":"VIR","country-code":"850"},{"name":"Wallis and Futuna","alpha-3":"WLF","country-code":"876"},{"name":"Western Sahara","alpha-3":"ESH","country-code":"732"},{"name":"Yemen","alpha-3":"YEM","country-code":"887"},{"name":"Zambia","alpha-3":"ZMB","country-code":"894"},{"name":"Zimbabwe","alpha-3":"ZWE","country-code":"716"}]
 
 function limit(min, max, x) {
     if (isNaN(x)) return min;
     return Math.min(max, Math.max(min, x));
 }
 
-function getExpectancyString(le, year) {
-    return `Your current live expectancy is: ${le} (as of ${year})`
+function getExpectancyString(le) {
+    return `Your current life expectancy is: ${le} years`
+}
+
+function getCountdownModeString(countdown) {
+    return countdown == 0 ? "Count up from birthday (age)" : "Count down from life expectancy"
+}
+
+function getMonthString(month) {
+    switch (month) {
+        case 1:
+            return "January"
+        case 2:
+            return "February"
+        case 3:
+            return "March"
+        case 4:
+            return "April"
+        case 5:
+            return "May"
+        case 6:
+            return "June"
+        case 7:
+            return "July"
+        case 8:
+            return "August"
+        case 9:
+            return "September"
+        case 10:
+            return "October"
+        case 11:
+            return "November"
+        case 12:
+            return "December"
+        default:
+            return "Unknown"
+    }
+}
+
+function getTimeString(hour, minute) {
+    // Pad with 0
+    const h = hour.toString().padStart(2, "0")
+    const m = minute.toString().padStart(2, "0")
+    return `${h}:${m}`
+}
+
+function getSexString(sex) {
+    return sex == 0 ? "Female" : "Male"
+}
+
+function getSexStringForQuery(sex) {
+    return sex == 0 ? "FMLE" : "MLE"
+}
+
+function getCountryIndex(alpha3) {
+    for (let i = 0; i < COUNTRY_LIST.length; i++) {
+        if (COUNTRY_LIST[i]["alpha-3"] === alpha3) {
+            return i
+        }
+    }
+    return 0
 }
 
 function GET(url, callback) {
@@ -39,238 +99,430 @@ function GET(url, callback) {
     }
 }
 
-function buildPrefsWidget() {
-    this.settings = ExtensionUtils.getSettings(GS_SCHEMA);
-
-    /******************************
-     * Set up labels
-     ******************************/
-    let birthdateLabel = new Gtk.Label({
-        label: "Birthdate:", halign: Gtk.Align.START, visible: true
-    });
-    let timeLabel = new Gtk.Label({
-        label: "Time:", halign: Gtk.Align.START, visible: true
-    });
-    let timeSeparatorLabel = new Gtk.Label({
-        label: ":", halign: Gtk.Align.START, visible: true
-    });
-    let countryLabel = new Gtk.Label({
-        label: "Country (ISO-a3):", halign: Gtk.Align.START, visible: true
-    });
-    let sexLabel = new Gtk.Label({
-        label: "Sex:", halign: Gtk.Align.START, visible: true
-    });
-    let expectancyLabel = new Gtk.Label({
-        label: getExpectancyString(this.settings.get_double(GS_KEY_LIFE_EXPECTANCY), this.settings.get_int(GS_KEY_LIFE_EXPECTANCY_YEAR)),
-        halign: Gtk.Align.START,
+function build_group_info_list(parent, title, description, labels) {
+    const group = new Adw.PreferencesGroup({
+        title: _(title),
+        description: _(description),
         visible: true
     });
-    let countryLink = new Gtk.LinkButton({
-        label: "ISO 3166 Code List",
-        uri: "https://www.iso.org/obp/ui/#search/code/",
-        halign: Gtk.Align.END,
-        visible: true
-    });
-    let modeLabel = new Gtk.Label({
-        label: "Display Mode:", halign: Gtk.Align.START, visible: true
-    });
-    let digitLabel = new Gtk.Label({
-        label: "Number of digits:", halign: Gtk.Align.START, visible: true
-    });
+    const rows = []
+    for (const label of labels) {
+        const row = new Adw.ActionRow({
+            title: label(),
+        })
+        group.add(row)
+        rows.push(() => row.set_title(label()))
+    }
+    parent.add(group)
 
-    /******************************
-     * Set up widgets
-     ******************************/
-    // Calendar
-    let birthdateEntry = new Gtk.Calendar({
-            year: this.settings.get_int(GS_KEY_YEAR),
-            month: this.settings.get_int(GS_KEY_MONTH) - 1,
-            day: this.settings.get_int(GS_KEY_DAY),
+    const refresh_rows_fn = () => {
+        for (const row of rows) {
+            row()
+        }
+    }
+
+    return refresh_rows_fn
+}
+
+export default class ThanatophobiaPreferences extends ExtensionPreferences {
+    fillPreferencesWindow(window) {
+        // Define 4 pages
+        // 1 - Page for view configurations without editing
+        const page_display = new Adw.PreferencesPage({
+            title: _("Preview"),
+            description: _("View your current settings."),
+            icon_name: "edit-find-symbolic",
+            visible: true
+        });
+        window.add(page_display);
+        // 2 - Page to edit birth day
+        const page_bday = new Adw.PreferencesPage({
+            title: _("Birthday"),
+            description: _("Edit your birth day."),
+            icon_name: "system-users-symbolic",
+            visible: true
+        });
+        window.add(page_bday);
+        // 3 - Page to get WHO data
+        const page_WHO_get_data = new Adw.PreferencesPage({
+            title: _("WHO Data"),
+            description: _("Get your life expectancy based on the country and gender from the World Health Organization."),
+            icon_name: "network-workgroup-symbolic",
+            visible: true
+        });
+        window.add(page_WHO_get_data);
+        // 4 - Page to edit display settings
+        const page_display_settings = new Adw.PreferencesPage({
+            title: _("Display"),
+            description: _("Edit your display settings."),
+            icon_name: "video-display-symbolic",
+            visible: true
+        });
+        window.add(page_display_settings);
+
+
+
+        ////////////////////////////////////////////////////////////////////////
+        // Page 1: View Configurations
+        ////////////////////////////////////////////////////////////////////////
+        const refresh_bday_group_info = build_group_info_list(
+            page_display,
+            "Birthdate",
+            "Information about when you were born.",
+            [
+                () => `Year: ${this.getSettings().get_int(GS_KEY_YEAR)}`,
+                () => `Month: ${getMonthString(this.getSettings().get_int(GS_KEY_MONTH))}`,
+                () => `Day: ${this.getSettings().get_int(GS_KEY_DAY)}`,
+                () => `Time: ${getTimeString(this.getSettings().get_int(GS_KEY_HOUR), this.getSettings().get_int(GS_KEY_MINUTE))} (24h format)`,
+            ]
+        )
+
+        const refresh_demographic_group = build_group_info_list(
+            page_display,
+            "Demographics",
+            "Information about your demographics.",
+            [
+                () => `Sex: ${getSexString(this.getSettings().get_int(GS_KEY_SEX))}`,
+                () => `Country (ISO-alpha3): ${this.getSettings().get_string(GS_KEY_COUNTRY)}`
+            ]
+        )
+
+        const refresh_life_expectancy_group = build_group_info_list(
+            page_display,
+            "Life Expectancy",
+            "Information about your life expectancy.",
+            [
+                () => getExpectancyString(this.getSettings().get_double(GS_KEY_LIFE_EXPECTANCY)),
+                () => `Source: ${this.getSettings().get_string(GS_KEY_LIFE_EXPECTANCY_SOURCE)}`
+            ]
+        )
+
+        const refresh_display_group = build_group_info_list(
+            page_display,
+            "Display",
+            "Information about how the time is displayed.",
+            [
+                () => `Display mode: ${getCountdownModeString(this.getSettings().get_int(GS_KEY_COUNTDOWN))}`,
+                () => `Number of digits in panel: ${this.getSettings().get_int(GS_KEY_DIGITS)}`
+            ]
+        )
+
+
+
+        ////////////////////////////////////////////////////////////////////////
+        // Page 2: Personal Information
+        ////////////////////////////////////////////////////////////////////////
+        // Groups
+        const bday_group = new Adw.PreferencesGroup({
+            title: _("Birthday"),
+            description: _("What is your birthday?"),
+            visible: true
+        });
+        page_bday.add(bday_group);
+        const time_group = new Adw.PreferencesGroup({
+            title: _("Birth Time"),
+            description: _(
+                "Insert the time you were born in 24h format.\n"+
+                "If you do not know, leave it at 12:00.\n"+
+                "This information may be present in your birth certificate."
+            ),
+            visible: true
+        });
+        page_bday.add(time_group);
+
+        // Calendar for birthdate
+        const birthdateEntry = new Gtk.Calendar({
+            year: this.getSettings().get_int(GS_KEY_YEAR),
+            month: this.getSettings().get_int(GS_KEY_MONTH) - 1,
+            day: this.getSettings().get_int(GS_KEY_DAY),
             halign: Gtk.Align.START,
             visible: true
         });
-    // Birthdate hours
-    let hourEntry = new Gtk.SpinButton();
-    hourEntry.set_sensitive(true);
-    hourEntry.set_numeric(true);
-    hourEntry.set_range(0, 23);
-    hourEntry.set_value(limit(0, 23, settings.get_int(GS_KEY_HOUR)));
-    hourEntry.set_increments(1, 2);
-    // Birthdate minutes
-    let minuteEntry = new Gtk.SpinButton();
-    minuteEntry.set_sensitive(true);
-    minuteEntry.set_numeric(true);
-    minuteEntry.set_range(0, 59);
-    minuteEntry.set_value(limit(0, 59, settings.get_int(GS_KEY_MINUTE)));
-    minuteEntry.set_increments(1, 5);
-    // Residency country
-    let countryEntry = new Gtk.Entry({
-        buffer: new Gtk.EntryBuffer()
-    });
-    countryEntry.set_text(settings.get_string(GS_KEY_COUNTRY))
-    // Biological sex
-    let sexEntry = new Gtk.ComboBoxText()
-    sexEntry.append_text("Male");
-    sexEntry.append_text("Female");
-    sexEntry.set_active(settings.get_int(GS_KEY_SEX) === 1 ? 0 : 1);
-    // Recalculate button
-    let recalculateButton = new Gtk.Button({label: "Recalculate"})
-    // Mode selection
-    let modeEntry = new Gtk.ComboBoxText()
-    modeEntry.append_text("Count up from birthday (age)");
-    modeEntry.append_text("Count down from life expectancy");
-    modeEntry.set_active(settings.get_int(GS_KEY_COUNTDOWN) === 1 ? 1 : 0);
-    // Digit selection
-    let digitEntry = new Gtk.SpinButton();
-    digitEntry.set_sensitive(true);
-    digitEntry.set_numeric(true);
-    digitEntry.set_range(0, 15);
-    digitEntry.set_value(limit(0, 15, settings.get_int(GS_KEY_DIGITS)));
-    digitEntry.set_increments(1, 2);
+        bday_group.add(birthdateEntry);
 
-    /******************************
-     * Add widgets to container
-     ******************************/
-    // Container
-    let prefsWidget = new Gtk.Grid({
-            "margin-start": 18,
-            "margin-end": 18,
-            "margin-top": 18,
-            "margin-bottom": 18,
+        // Grid so we can have the hour, separator, and minute in the same row
+        const time_grid = new Gtk.Grid({
             "column_spacing": 12,
             "row_spacing": 12,
             "visible": true
         });
-    // Calendar
-    prefsWidget.attach(birthdateLabel, 0, 1, 1, 1);
-    prefsWidget.attach_next_to(birthdateEntry, birthdateLabel, Gtk.PositionType.RIGHT, 3, 1);
-    // Birthdate hours and minutes
-    prefsWidget.attach_next_to(timeLabel, birthdateLabel, Gtk.PositionType.BOTTOM, 1, 1);
-    prefsWidget.attach_next_to(hourEntry, timeLabel, Gtk.PositionType.RIGHT, 1, 1);
-    prefsWidget.attach_next_to(timeSeparatorLabel, hourEntry, Gtk.PositionType.RIGHT, 1, 1);
-    prefsWidget.attach_next_to(minuteEntry, timeSeparatorLabel, Gtk.PositionType.RIGHT, 1, 1);
-    // Biological sex
-    prefsWidget.attach_next_to(sexLabel, timeLabel, Gtk.PositionType.BOTTOM, 1, 1);
-    prefsWidget.attach_next_to(sexEntry, sexLabel, Gtk.PositionType.RIGHT, 3, 1);
-    // Residency country
-    prefsWidget.attach_next_to(countryLabel, sexLabel, Gtk.PositionType.BOTTOM, 1, 1);
-    prefsWidget.attach_next_to(countryEntry, countryLabel, Gtk.PositionType.RIGHT, 3, 1);
-    // Recalculate
-    prefsWidget.attach_next_to(expectancyLabel, countryLabel, Gtk.PositionType.BOTTOM, 4, 1);
-    prefsWidget.attach(recalculateButton, 0, 7, 1, 1);
-    // Country link
-    prefsWidget.attach(countryLink, 1, 7, 3, 1);
-    // Display mode
-    prefsWidget.attach_next_to(modeLabel, recalculateButton, Gtk.PositionType.BOTTOM, 1, 1);
-    prefsWidget.attach_next_to(modeEntry, modeLabel, Gtk.PositionType.RIGHT, 3, 1);
-    // Digit
-    prefsWidget.attach_next_to(digitLabel, modeLabel, Gtk.PositionType.BOTTOM, 1, 1);
-    prefsWidget.attach_next_to(digitEntry, digitLabel, Gtk.PositionType.RIGHT, 3, 1);
+        time_group.add(time_grid);
+        // Hour
+        const hourEntry = new Gtk.SpinButton();
+        hourEntry.set_sensitive(true);
+        hourEntry.set_numeric(true);
+        hourEntry.set_range(0, 23);
+        hourEntry.set_value(limit(0, 23, this.getSettings().get_int(GS_KEY_HOUR)));
+        hourEntry.set_increments(1, 2);
+        time_grid.attach(hourEntry, 0, 0, 1, 1);
+        // Separator
+        const timeSeparatorLabel = new Gtk.Label({
+            label: ":", halign: Gtk.Align.START, visible: true
+        });
+        time_grid.attach(timeSeparatorLabel, 1, 0, 1, 1);
+        // Minute
+        const minuteEntry = new Gtk.SpinButton();
+        minuteEntry.set_sensitive(true);
+        minuteEntry.set_numeric(true);
+        minuteEntry.set_range(0, 59);
+        minuteEntry.set_value(limit(0, 59, this.getSettings().get_int(GS_KEY_MINUTE)));
+        minuteEntry.set_increments(1, 5);
+        time_grid.attach(minuteEntry, 2, 0, 1, 1);
+        
+        // Callbacks
+        const update_date = () => {
+            this.getSettings().set_int(GS_KEY_YEAR, birthdateEntry.get_date().get_year());
+            this.getSettings().set_int(GS_KEY_MONTH, birthdateEntry.get_date().get_month());
+            this.getSettings().set_int(GS_KEY_DAY, birthdateEntry.get_date().get_day_of_month());
+            refresh_bday_group_info()
+        }
+        birthdateEntry.connect("day-selected", update_date);
+        birthdateEntry.connect("next-month", update_date);
+        birthdateEntry.connect("prev-month", update_date);
+        birthdateEntry.connect("next-year", update_date);
+        birthdateEntry.connect("prev-year", update_date);
+        hourEntry.connect("value-changed", () => {
+            this.getSettings().set_int(GS_KEY_HOUR, hourEntry.get_value_as_int());
+            refresh_bday_group_info()
+        });
+        minuteEntry.connect("value-changed", () => {
+            this.getSettings().set_int(GS_KEY_MINUTE, minuteEntry.get_value_as_int());
+            refresh_bday_group_info()
+        });
 
-    /******************************
-     * Add callbacks
-     ******************************/
-    // Calendar changed
-    function update_date(inputField) {
-        settings.set_int(GS_KEY_YEAR, inputField.get_date().get_year());
-        settings.set_int(GS_KEY_MONTH, inputField.get_date().get_month());
-        settings.set_int(GS_KEY_DAY, inputField.get_date().get_day_of_month());
-    }
 
-    birthdateEntry.connect("day-selected", update_date);
-    birthdateEntry.connect("next-month", update_date);
-    birthdateEntry.connect("prev-month", update_date);
-    birthdateEntry.connect("next-year", update_date);
-    birthdateEntry.connect("prev-year", update_date);
-    // Hours
-    hourEntry.connect("value-changed", function (field) {
-        settings.set_int(GS_KEY_HOUR, field.get_value_as_int());
-    });
-    // Minutes
-    minuteEntry.connect("value-changed", function (field) {
-        settings.set_int(GS_KEY_MINUTE, field.get_value_as_int());
-    });
-    // Country
-    countryEntry.connect("changed", function (field) {
-        settings.set_string(GS_KEY_COUNTRY, field.get_text().toUpperCase());
-    })
-    // Sex
-    sexEntry.connect("changed", function (field) {
-        settings.set_int(GS_KEY_SEX, field.get_active() === 1 ? 0 : 1);
-    });
-    // Button
-    recalculateButton.connect("clicked", () => {
-        // Users country ISO-3 code
-        let country = settings.get_string(GS_KEY_COUNTRY);
-        // User's gender converted to a string for filtering the results of the WHO API
-        // "BTSX" (both sexes) and "UNK" (unknown) are also available and could be a fall-back
-        let sex = settings.get_int(GS_KEY_SEX) === 1 ? "MLE" : "FMLE";
 
-        // The WHO may not have data for every year so "getData" gets called recursively
-        // in order to find the latest year with data available
-        const getData = yearOffset => {
-            // If the data is more than 20 years old, give up, this may also happen
-            // because an invalid country ISO alpha-3 code was provided
-            if (yearOffset > 20) {
-                expectancyLabel.set_text("Could not fetch data, using previous: " + this.settings.get_double(GS_KEY_LIFE_EXPECTANCY) + "\nDid you input a correct ISO alpha-3 country code?")
-                return;
+        ////////////////////////////////////////////////////////////////////////
+        // Page 3: WHO Data
+        ////////////////////////////////////////////////////////////////////////
+        // Groups
+        const demographic_data_group = new Adw.PreferencesGroup({
+            title: _("Demographics"),
+            description: _("Select your sex and the country where you reside."),
+            visible: true
+        });
+        page_WHO_get_data.add(demographic_data_group);
+        const recalculate_group = new Adw.PreferencesGroup({
+            title: _("Recalculate"),
+            description: _("Recalculate your life expectancy based on the selected demographics by retrieving data from the World Health Organization."),
+            visible: true
+        });
+        page_WHO_get_data.add(recalculate_group);
+        const manual_expectancy_group = new Adw.PreferencesGroup({
+            title: _("Manual Life Expectancy"),
+            description: _("Input your life expectancy manually."),
+            visible: true
+        });
+        page_WHO_get_data.add(manual_expectancy_group);
+
+        // Sex and country
+        const sex_entry_model = new Gtk.StringList();
+        sex_entry_model.append(_(getSexString(0)));
+        sex_entry_model.append(_(getSexString(1)));
+        const sex_entry = new Adw.ComboRow({
+            title: _("Sex"),
+            model: sex_entry_model,
+            selected: this.getSettings().get_int(GS_KEY_SEX)
+        });
+        demographic_data_group.add(sex_entry);
+
+        const country_entry_model = new Gtk.StringList();
+        for (const country of COUNTRY_LIST) {
+            country_entry_model.append(country["name"]);
+        }
+        const country_entry = new Adw.ComboRow({
+            title: _("Country"),
+            enable_search: true,
+            search_match_mode: Gtk.StringFilterMatchMode.PREFIX,
+            model: country_entry_model,
+            selected: getCountryIndex(this.getSettings().get_string(GS_KEY_COUNTRY))
+        });
+        demographic_data_group.add(country_entry);
+
+        // Sex and country callbacks
+        sex_entry.connect("notify::selected", () => {
+            this.getSettings().set_int(GS_KEY_SEX, sex_entry.get_selected());
+            refresh_demographic_group()
+        });
+        country_entry.connect("notify::selected", () => {
+            const index = country_entry.get_selected();
+            if (index < 0) return;
+            if (index >= COUNTRY_LIST.length) return;
+            const country_iso_a3 = COUNTRY_LIST[index]["alpha-3"];
+            this.getSettings().set_string(GS_KEY_COUNTRY, country_iso_a3);
+            refresh_demographic_group()
+        });
+
+        // Toast for info
+        const toast = new Adw.Toast({
+            title: _("Life Expectancy"),
+        });
+        // Recalculate button
+        const recalculate_button = new Adw.ButtonRow({
+            title: _("Fetch Data from WHO"),
+            end_icon_name: "view-refresh-symbolic",
+        });
+        recalculate_group.add(recalculate_button);
+
+
+
+        // Manual life expectancy (decimal)
+        const manual_life_expectancy_entry = new Adw.SpinRow({
+            title: _("Life Expectancy"),
+            value: this.getSettings().get_double(GS_KEY_LIFE_EXPECTANCY),
+            digits: 2,
+            adjustment: new Gtk.Adjustment({
+                lower: 0,
+                upper: 150,
+                step_increment: 0.1
+            })
+        });
+        manual_expectancy_group.add(manual_life_expectancy_entry);
+
+        // Signals for manual life expectancy
+        manual_life_expectancy_entry.connect("notify::value", () => {
+            this.getSettings().set_double(GS_KEY_LIFE_EXPECTANCY, manual_life_expectancy_entry.get_value());
+            this.getSettings().set_string(GS_KEY_LIFE_EXPECTANCY_SOURCE, `Manually set by user on ${new Date().toLocaleDateString()}`);
+            refresh_life_expectancy_group()
+        });
+
+
+
+        ////////////////////////////////////////////////////////////////////////
+        // Page 4: Display Settings
+        ////////////////////////////////////////////////////////////////////////
+        // Groups
+        const display_mode_group = new Adw.PreferencesGroup({
+            title: _("Display Mode"),
+            description: _("Select how the time is displayed."),
+            visible: true
+        });
+        page_display_settings.add(display_mode_group);
+
+        // Mode selection
+        const mode_entry_model = new Gtk.StringList();
+        mode_entry_model.append(_(getCountdownModeString(0)));
+        mode_entry_model.append(_(getCountdownModeString(1)));
+        const mode_entry = new Adw.ComboRow({
+            title: _("Display Mode"),
+            model: mode_entry_model,
+            selected: this.getSettings().get_int(GS_KEY_COUNTDOWN)
+        });
+        display_mode_group.add(mode_entry);
+        // Number of digits
+        const digit_entry = new Adw.SpinRow({
+            title: _("Number of digits in panel"),
+            value: this.getSettings().get_int(GS_KEY_DIGITS),
+            digits: 0,
+            adjustment: new Gtk.Adjustment({
+                lower: 0,
+                upper: 15,
+                step_increment: 1
+            })
+        });
+        digit_entry.set_value(this.getSettings().get_int(GS_KEY_DIGITS));
+        digit_entry.set_snap_to_ticks(true);
+        digit_entry.set_numeric(true);
+        display_mode_group.add(digit_entry);
+
+        // Number of digits callback
+        mode_entry.connect("notify::selected", () => {
+            this.getSettings().set_int(GS_KEY_COUNTDOWN, mode_entry.get_selected());
+            refresh_display_group()
+        });
+        digit_entry.connect("notify::value", () => {
+            this.getSettings().set_int(GS_KEY_DIGITS, digit_entry.get_value());
+            refresh_display_group()
+        });
+
+
+
+        // Button callback
+        recalculate_button.connect("activated", async () => {
+            // Users country ISO-3 code
+            let country = this.getSettings().get_string(GS_KEY_COUNTRY);
+            // User's gender converted to a string for filtering the results of the WHO API
+            // "BTSX" (both sexes) and "UNK" (unknown) are also available and could be a fall-back
+            let sex = getSexStringForQuery(this.getSettings().get_int(GS_KEY_SEX))
+
+            // The WHO may not have data for every year so "getData" gets called recursively
+            // in order to find the latest year with data available
+            const getData = async (sex_selected, yearOffset) => {
+                // If the data is more than 20 years old, give up, this may also happen
+                // because an invalid country ISO alpha-3 code was provided
+                if (yearOffset > 20) {
+                    // expectancyLabel.set_text("Could not fetch data, using previous: " + window._settings.get_double(GS_KEY_LIFE_EXPECTANCY) + "\nDid you input a correct ISO alpha-3 country code?")
+                    if (sex_selected == "UNK") {
+                        // The WHO API does not have data for the selected parameters
+                        // Update toast
+                        toast.dismiss();
+                        toast.set_title(_("No data available"));
+                        window.add_toast(toast);
+                    } else if (sex_selected == "BTSX") {
+                        // The WHO API does not have data for the selected parameters
+                        // Update toast
+                        toast.dismiss();
+                        toast.set_title(_("No data available, falling back on unknown sex data"));
+                        window.add_toast(toast);
+                        // Fallback on unknown
+                        getData("UNK", 0);
+                    } else {
+                        // The WHO API does not have data for the selected parameters
+                        // Update toast
+                        toast.dismiss();
+                        toast.set_title(_("No data available, falling back on both sex data"));
+                        window.add_toast(toast);
+                        // Fallback on both sexes
+                        getData("BTSX", 0);
+                    }
+                    return;
+                }
+
+                // Try to fetch data from WHO
+                // Get year with offset
+                let year = new Date().getFullYear() - yearOffset;
+                // Make API call
+                GET(`https://apps.who.int/gho/athena/api/GHO/WHOSIS_000001.json?profile=simple&filter=COUNTRY:${country};YEAR:${year};SEX:${sex_selected}`, (body) => {
+                    if (body) {
+                        // Try to parse body on success
+                        try {
+                            const json = JSON.parse(new TextDecoder().decode(body));
+                            if (json["fact"].length === 0) {
+                                // The JSON returned by the API has no data
+                                getData(sex_selected, yearOffset + 1);
+                                return;
+                            }
+                            // Average the results returned by the API
+                            let sum = 0
+                            for (const fact of json["fact"]) {
+                                sum += parseFloat(fact["Value"])
+                            }
+                            const expectancy = sum / json["fact"].length;
+                            // Update settings
+                            this.getSettings().set_double(GS_KEY_LIFE_EXPECTANCY, expectancy)
+                            this.getSettings().set_string(GS_KEY_LIFE_EXPECTANCY_SOURCE, `WHO data from ${year} for sex ${sex_selected}`)
+                            refresh_life_expectancy_group()
+                            // Update toast
+                            toast.dismiss();
+                            toast.set_title(_("Life Expectancy updated to ") + expectancy);
+                            window.add_toast(toast);
+                        } catch (e) {
+                            // The WHO API sometimes returns badly formatted JSON strings
+                            // it could also change, making the parsing process break
+                            getData(sex_selected, yearOffset + 1);
+                        }
+                    } else {
+                        // Fail on error code
+                        getData(sex_selected, yearOffset + 1);
+                    }
+                })
             }
 
-            // Try to fetch data from WHO
-            expectancyLabel.set_text(`Fetching data from WHO (${yearOffset} years old)...`);
-            // Get year with offset
-            let year = new Date().getFullYear() - yearOffset;
-            // Make API call
-            GET(`https://apps.who.int/gho/athena/api/GHO/WHOSIS_000001.json?profile=simple&filter=COUNTRY:${country};YEAR:${year};SEX:${sex}`, (body) => {
-                if (body) {
-                    // Try to parse body on success
-                    try {
-                        const json = JSON.parse(body);
-                        if (json["fact"].length === 0) {
-                            // The JSON returned by the API has no data
-                            getData(yearOffset + 1);
-                            return;
-                        }
-                        // Average the results returned by the API
-                        let sum = 0
-                        for (const fact of json["fact"]) {
-                            sum += parseFloat(fact["Value"])
-                        }
-                        const expectancy = sum / json["fact"].length;
-                        // Update settings
-                        settings.set_double(GS_KEY_LIFE_EXPECTANCY, expectancy);
-                        settings.set_int(GS_KEY_LIFE_EXPECTANCY_YEAR, year);
-                        // Update label
-                        expectancyLabel.set_text(getExpectancyString(this.settings.get_double(GS_KEY_LIFE_EXPECTANCY), this.settings.get_int(GS_KEY_LIFE_EXPECTANCY_YEAR)))
-                    } catch (e) {
-                        // The WHO API sometimes returns badly formatted JSON strings
-                        // it could also change, making the parsing process break
-                        getData(yearOffset + 1);
-                    }
-                } else {
-                    // Fail on error code
-                    getData(yearOffset + 1);
-                }
-            })
-        }
-        getData(0);
-    })
-    // Display mode
-    modeEntry.connect("changed", function (field) {
-        settings.set_int(GS_KEY_COUNTDOWN, field.get_active() === 1 ? 1 : 0);
-    });
-    // Digit
-    digitEntry.connect("changed", function (field) {
-        settings.set_int(GS_KEY_DIGITS, field.get_value_as_int());
-    });
-    // Put container on window
-    prefsWidget.connect("realize", () => {
-        {
-            let window = prefsWidget.get_root();
-            window.default_width = 300;
-            window.default_height = 700;
-        }
-    });
-
-    return prefsWidget;
+            // Set the spinner to be visible
+            toast.set_title(_("Fetching data from WHO..."));
+            window.add_toast(toast);
+            // Start the data fetching process
+            getData(sex, 0);
+        })
+    }
 }

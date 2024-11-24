@@ -36,13 +36,13 @@
             <description/>
         </key>
         <key type="d" name="expectancy">
-            <default>73.2</default>
+            <default>76.29</default>
             <summary>Life Expectancy</summary>
             <description/>
         </key>
-        <key type="i" name="expectancy-year">
-            <default>2021</default>
-            <summary>Year Life Expectancy Was Fetched From</summary>
+        <key type="s" name="expectancy-source">
+            <default>"WHO life expectancy in 2025 for europe"</default>
+            <summary>Where the life expectancy comes from</summary>
             <description/>
         </key>
         <key type="i" name="countdown">
@@ -52,7 +52,7 @@
         </key>
         <key type="i" name="rounding">
             <default>9</default>
-            <summary>Number of digits to display.</summary>
+            <summary>Number of digits to display</summary>
             <description/>
         </key>
     </schema>
