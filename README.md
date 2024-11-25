@@ -20,7 +20,7 @@ glib-compile-schemas thanatophobia@yatx.one/schemas
 gnome-extensions pack --force ./thanatophobia@yatx.one
 sudo gnome-extensions uninstall thanatophobia@yatx.one
 sudo gnome-extensions install --force ./thanatophobia@yatx.one.shell-extension.zip
-thanatophobia@yatx.one/wayland.sh > thanatophobia@yatx.one/log.txt
+thanatophobia@yatx.one/wayland.sh
 ```
 
 You might need to log out for the extension to be listed.

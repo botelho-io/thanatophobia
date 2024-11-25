@@ -1,5 +1,14 @@
 "use strict";
 
+import GLib from 'gi://GLib';
+import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import GObject from 'gi://GObject';
+import Clutter from 'gi://Clutter';
+import St from 'gi://St';
+
 const GS_KEY_DAY = "day";
 const GS_KEY_MONTH = "month";
 const GS_KEY_YEAR = "year";
@@ -9,22 +18,6 @@ const GS_KEY_LIFE_EXPECTANCY = "expectancy";
 const GS_KEY_COUNTDOWN = "countdown";
 const GS_KEY_DIGITS = "rounding";
 const GS_SCHEMA = "org.gnome.shell.extensions.thanatophobia";
-
-
-// const GLib = imports.gi.GLib;
-import GLib from 'gi://GLib';
-// const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
-import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
-// const Main = imports.ui.main;
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-// const PanelMenu = imports.ui.panelMenu;
-import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
-// const PopupMenu = imports.ui.popupMenu;
-import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
-// const {GObject, St, Clutter} = imports.gi;
-import GObject from 'gi://GObject';
-import Clutter from 'gi://Clutter';
-import St from 'gi://St';
 
 let sourceId = null;
 
